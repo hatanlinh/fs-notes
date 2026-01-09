@@ -1,0 +1,176 @@
+import type { FileNode } from '$lib/types';
+
+/**
+ * Build a file tree from a directory handle
+ */
+export async function buildFileTree(
+	dirHandle: FileSystemDirectoryHandle,
+	parentPath: string = ''
+): Promise<FileNode[]> {
+	const nodes: FileNode[] = [];
+
+	try {
+		for await (const entry of dirHandle.values()) {
+			const path = parentPath ? `${parentPath}/${entry.name}` : entry.name;
+
+			if (entry.kind === 'directory') {
+				const children = await buildFileTree(entry, path);
+				nodes.push({
+					name: entry.name,
+					path,
+					type: 'directory',
+					handle: entry,
+					children: children.sort((a, b) => {
+						// Directories first, then alphabetical
+						if (a.type !== b.type) {
+							return a.type === 'directory' ? -1 : 1;
+						}
+						return a.name.localeCompare(b.name);
+					})
+				});
+			} else {
+				nodes.push({
+					name: entry.name,
+					path,
+					type: 'file',
+					handle: entry
+				});
+			}
+		}
+	} catch (err) {
+		console.error('Error building file tree:', err);
+	}
+
+	return nodes.sort((a, b) => {
+		// Directories first, then alphabetical
+		if (a.type !== b.type) {
+			return a.type === 'directory' ? -1 : 1;
+		}
+		return a.name.localeCompare(b.name);
+	});
+}
+
+/**
+ * Read file content from a file handle
+ */
+export async function readFile(fileHandle: FileSystemFileHandle): Promise<string> {
+	try {
+		const file = await fileHandle.getFile();
+		return await file.text();
+	} catch (err) {
+		console.error('Error reading file:', err);
+		throw err;
+	}
+}
+
+/**
+ * Write content to a file handle
+ */
+export async function writeFile(
+	fileHandle: FileSystemFileHandle,
+	content: string
+): Promise<void> {
+	try {
+		const writable = await fileHandle.createWritable();
+		await writable.write(content);
+		await writable.close();
+	} catch (err) {
+		console.error('Error writing file:', err);
+		throw err;
+	}
+}
+
+/**
+ * Create a new file in a directory
+ */
+export async function createFile(
+	dirHandle: FileSystemDirectoryHandle,
+	fileName: string
+): Promise<FileSystemFileHandle> {
+	try {
+		const fileHandle = await dirHandle.getFileHandle(fileName, { create: true });
+		return fileHandle;
+	} catch (err) {
+		console.error('Error creating file:', err);
+		throw err;
+	}
+}
+
+/**
+ * Create a new directory
+ */
+export async function createDirectory(
+	dirHandle: FileSystemDirectoryHandle,
+	dirName: string
+): Promise<FileSystemDirectoryHandle> {
+	try {
+		const newDirHandle = await dirHandle.getDirectoryHandle(dirName, { create: true });
+		return newDirHandle;
+	} catch (err) {
+		console.error('Error creating directory:', err);
+		throw err;
+	}
+}
+
+/**
+ * Delete a file or directory
+ */
+export async function deleteEntry(
+	parentHandle: FileSystemDirectoryHandle,
+	entryName: string,
+	options?: { recursive?: boolean }
+): Promise<void> {
+	try {
+		await parentHandle.removeEntry(entryName, options);
+	} catch (err) {
+		console.error('Error deleting entry:', err);
+		throw err;
+	}
+}
+
+/**
+ * Get a file or directory handle by path
+ */
+export async function getHandleByPath(
+	rootHandle: FileSystemDirectoryHandle,
+	path: string
+): Promise<FileSystemFileHandle | FileSystemDirectoryHandle | null> {
+	const parts = path.split('/').filter((p) => p.length > 0);
+
+	let currentHandle: FileSystemDirectoryHandle | FileSystemFileHandle = rootHandle;
+
+	try {
+		for (let i = 0; i < parts.length; i++) {
+			const part = parts[i];
+			const isLast = i === parts.length - 1;
+
+			if (currentHandle.kind !== 'directory') {
+				return null;
+			}
+
+			// Try to get as directory first
+			try {
+				currentHandle = await currentHandle.getDirectoryHandle(part);
+			} catch {
+				// If not a directory, try as file
+				if (isLast) {
+					currentHandle = await currentHandle.getFileHandle(part);
+				} else {
+					return null;
+				}
+			}
+		}
+
+		return currentHandle;
+	} catch (err) {
+		console.error('Error getting handle by path:', err);
+		return null;
+	}
+}
+
+/**
+ * Check if File System Access API is supported
+ */
+export function isFileSystemAccessSupported(): boolean {
+	return 'showDirectoryPicker' in window;
+}
