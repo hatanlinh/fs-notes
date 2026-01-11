@@ -11,6 +11,6 @@
 	</div>
 {:else}
 	<div class="flex flex-1 items-center justify-center p-4 text-sm text-gray-500">
-		<p>No folder opened</p>
+		<p>No directory opened</p>
 	</div>
 {/if}
