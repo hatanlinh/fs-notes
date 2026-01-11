@@ -5,7 +5,7 @@
 	import EditorPanel from '$lib/components/editor/EditorPanel.svelte';
 </script>
 
-<div class="flex h-screen flex-col overflow-hidden">
+<div class="flex h-screen flex-col overflow-hidden bg-gray-100 dark:bg-gray-950">
 	<!-- Top Navigation -->
 	<NavBar />
 

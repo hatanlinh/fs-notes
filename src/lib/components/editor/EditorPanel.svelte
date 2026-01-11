@@ -46,25 +46,27 @@
 	});
 </script>
 
-<main class="flex flex-1 flex-col overflow-hidden bg-white dark:bg-gray-900">
-	<!-- Tab Bar -->
-	<EditorTabs />
+<main class="flex flex-1 flex-col overflow-hidden py-2 pr-2">
+	<div class="flex h-full flex-col overflow-hidden rounded-lg bg-white dark:bg-gray-900">
+		<!-- Tab Bar -->
+		<EditorTabs />
 
-	<!-- Editor Area -->
-	<div class="flex-1 overflow-hidden">
-		{#if $activeTab}
-			<TextEditor
-				content={$activeTab.content}
-				onContentChange={handleContentChange}
-				onCursorChange={handleCursorChange}
-			/>
-		{:else}
-			<div class="flex h-full items-center justify-center text-gray-500">
-				<div class="text-center">
-					<p class="text-lg">No file open</p>
-					<p class="mt-2 text-sm">Open a file from the explorer to start editing</p>
+		<!-- Editor Area -->
+		<div class="flex-1 overflow-hidden">
+			{#if $activeTab}
+				<TextEditor
+					content={$activeTab.content}
+					onContentChange={handleContentChange}
+					onCursorChange={handleCursorChange}
+				/>
+			{:else}
+				<div class="flex h-full items-center justify-center text-gray-500">
+					<div class="text-center">
+						<p class="text-lg">No file open</p>
+						<p class="mt-2 text-sm">Open a file from the explorer to start editing</p>
+					</div>
 				</div>
-			</div>
-		{/if}
+			{/if}
+		</div>
 	</div>
 </main>
