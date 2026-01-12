@@ -86,24 +86,25 @@
 		window.removeEventListener('keydown', handleKeyDown);
 	});
 
-	let saveTimeout: ReturnType<typeof setTimeout>;
-	$effect(() => {
-		if ($activeTab?.isDirty) {
-			clearTimeout(saveTimeout);
-			saveTimeout = setTimeout(async () => {
-				if ($activeTab && $activeTab.isDirty) {
-					try {
-						const handle = $activeTab.file.handle as FileSystemFileHandle;
-						await writeFile(handle, $activeTab.content);
-						// Mark as saved
-						markTabSaved($activeTab.id);
-					} catch (err) {
-						console.error('Error auto-saving file:', err);
-					}
-				}
-			}, 1000);
-		}
-	});
+	// Auto-save disabled - use Ctrl+S to save manually
+	// let saveTimeout: ReturnType<typeof setTimeout>;
+	// $effect(() => {
+	// 	if ($activeTab?.isDirty) {
+	// 		clearTimeout(saveTimeout);
+	// 		saveTimeout = setTimeout(async () => {
+	// 			if ($activeTab && $activeTab.isDirty) {
+	// 				try {
+	// 					const handle = $activeTab.file.handle as FileSystemFileHandle;
+	// 					await writeFile(handle, $activeTab.content);
+	// 					// Mark as saved
+	// 					markTabSaved($activeTab.id);
+	// 				} catch (err) {
+	// 					console.error('Error auto-saving file:', err);
+	// 				}
+	// 			}
+	// 		}, 1000);
+	// 	}
+	// });
 </script>
 
 <main class="flex flex-1 flex-col overflow-hidden py-2 pr-2">
