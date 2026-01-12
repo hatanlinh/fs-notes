@@ -29,6 +29,7 @@
 	let editorContainer: HTMLDivElement;
 	let editorView: EditorView | null = null;
 	let themeObserver: MutationObserver | null = null;
+	let isUpdatingFromProp = false;
 
 	// Light theme
 	const lightTheme = EditorView.theme({
@@ -171,7 +172,7 @@
 				isDark ? darkTheme : lightTheme,
 				noUnderlineTheme,
 				EditorView.updateListener.of((update) => {
-					if (update.docChanged && onContentChange) {
+					if (update.docChanged && onContentChange && !isUpdatingFromProp) {
 						onContentChange(update.state.doc.toString());
 					}
 
@@ -247,6 +248,7 @@
 	// Update editor content when prop changes
 	$effect(() => {
 		if (editorView && content !== editorView.state.doc.toString()) {
+			isUpdatingFromProp = true;
 			editorView.dispatch({
 				changes: {
 					from: 0,
@@ -254,6 +256,10 @@
 					insert: content
 				}
 			});
+			// Reset flag after dispatch completes
+			setTimeout(() => {
+				isUpdatingFromProp = false;
+			}, 0);
 		}
 	});
 </script>
