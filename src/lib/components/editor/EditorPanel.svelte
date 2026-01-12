@@ -1,8 +1,12 @@
 <script lang="ts">
-	import { activeTab, updateTabContent, markTabSaved } from '$lib/stores/tabs';
+	import { onMount, onDestroy } from 'svelte';
+	import { activeTab, updateTabContent, markTabSaved, tabs } from '$lib/stores/tabs';
 	import { writeFile } from '$lib/services/file-system';
 	import EditorTabs from './EditorTabs.svelte';
+	import EditorControlBar from './EditorControlBar.svelte';
 	import TextEditor from './TextEditor.svelte';
+
+	let editorComponent: TextEditor | null = $state(null);
 
 	async function handleContentChange(content: string) {
 		if ($activeTab) {
@@ -12,20 +16,76 @@
 
 	async function handleCursorChange(line: number, column: number) {
 		if ($activeTab) {
-			// Update cursor position in the active tab
-			activeTab.update((tab) => {
-				if (tab) {
-					return {
-						...tab,
-						cursorPosition: { line, column }
-					};
-				}
-				return tab;
+			tabs.update((currentTabs) => {
+				return currentTabs.map((tab) => {
+					if (tab.id === $activeTab?.id) {
+						return {
+							...tab,
+							cursorPosition: { line, column }
+						};
+					}
+					return tab;
+				});
 			});
 		}
 	}
 
-	// Auto-save functionality (debounced)
+	// Save current active tab
+	async function handleSave() {
+		if ($activeTab && $activeTab.isDirty) {
+			try {
+				const handle = $activeTab.file.handle as FileSystemFileHandle;
+				await writeFile(handle, $activeTab.content);
+				markTabSaved($activeTab.id);
+			} catch (err) {
+				console.error('Error saving file:', err);
+			}
+		}
+	}
+
+	async function handleSaveAll() {
+		const dirtyTabs = $tabs.filter((tab) => tab.isDirty);
+		for (const tab of dirtyTabs) {
+			try {
+				const handle = tab.file.handle as FileSystemFileHandle;
+				await writeFile(handle, tab.content);
+				markTabSaved(tab.id);
+			} catch (err) {
+				console.error('Error saving file:', tab.file.name, err);
+			}
+		}
+	}
+
+	function handleUndo() {
+		if (editorComponent) {
+			editorComponent.undo();
+		}
+	}
+
+	function handleRedo() {
+		if (editorComponent) {
+			editorComponent.redo();
+		}
+	}
+
+	function handleKeyDown(e: KeyboardEvent) {
+		if ((e.ctrlKey || e.metaKey) && e.key === 's' && !e.shiftKey) {
+			e.preventDefault();
+			handleSave();
+		} else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'S') {
+			e.preventDefault();
+			handleSaveAll();
+		}
+	}
+
+	onMount(() => {
+		window.addEventListener('keydown', handleKeyDown);
+	});
+
+	onDestroy(() => {
+		window.removeEventListener('keydown', handleKeyDown);
+	});
+
 	let saveTimeout: ReturnType<typeof setTimeout>;
 	$effect(() => {
 		if ($activeTab?.isDirty) {
@@ -47,7 +107,17 @@
 </script>
 
 <main class="flex flex-1 flex-col overflow-hidden py-2 pr-2">
-	<div class="flex h-full flex-col overflow-hidden rounded-lg bg-white dark:bg-gray-900">
+	<div class="flex pb-1">
+		<!-- Control Bar -->
+		<EditorControlBar
+			onUndo={handleUndo}
+			onRedo={handleRedo}
+			onSave={handleSave}
+			onSaveAll={handleSaveAll}
+		/>
+	</div>
+
+	<div class="flex h-full flex-col overflow-hidden rounded-md bg-white dark:bg-gray-900">
 		<!-- Tab Bar -->
 		<EditorTabs />
 
@@ -55,6 +125,7 @@
 		<div class="flex-1 overflow-hidden">
 			{#if $activeTab}
 				<TextEditor
+					bind:this={editorComponent}
 					content={$activeTab.content}
 					onContentChange={handleContentChange}
 					onCursorChange={handleCursorChange}

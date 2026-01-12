@@ -22,7 +22,7 @@
 </script>
 
 <div
-	class="flex min-w-50 items-center gap-2 rounded-lg px-3 py-1.5 text-sm transition-colors {isActive
+	class="flex min-w-50 items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors {isActive
 		? 'bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100'
 		: 'dark:hover:bg-gray-650 bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300'}"
 >

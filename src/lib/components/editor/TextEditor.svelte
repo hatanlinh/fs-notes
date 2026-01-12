@@ -3,6 +3,8 @@
 	import { EditorView, basicSetup } from 'codemirror';
 	import { EditorState } from '@codemirror/state';
 	import { markdown } from '@codemirror/lang-markdown';
+	import { history, undo as undoCommand, redo as redoCommand } from '@codemirror/commands';
+	import { keymap } from '@codemirror/view';
 
 	interface Props {
 		content?: string;
@@ -11,6 +13,18 @@
 	}
 
 	let { content = '', onContentChange, onCursorChange }: Props = $props();
+
+	export function undo() {
+		if (editorView) {
+			undoCommand(editorView);
+		}
+	}
+
+	export function redo() {
+		if (editorView) {
+			redoCommand(editorView);
+		}
+	}
 
 	let editorContainer: HTMLDivElement;
 	let editorView: EditorView | null = null;
@@ -148,6 +162,12 @@
 			extensions: [
 				basicSetup,
 				markdown(),
+				history(),
+				keymap.of([
+					{ key: 'Mod-z', run: undoCommand },
+					{ key: 'Mod-y', run: redoCommand },
+					{ key: 'Mod-Shift-z', run: redoCommand }
+				]),
 				isDark ? darkTheme : lightTheme,
 				noUnderlineTheme,
 				EditorView.updateListener.of((update) => {
