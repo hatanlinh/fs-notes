@@ -10,9 +10,10 @@ export interface FileNode {
 
 export interface TabInfo {
 	id: string;
-	file: FileNode;
+	file: FileNode | null; // null for unsaved tabs
 	content: string;
 	isDirty: boolean;
+	isUnsaved?: boolean; // true for new tabs that haven't been saved yet
 	cursorPosition?: {
 		line: number;
 		column: number;

@@ -7,8 +7,8 @@
 >
 	<div class="flex items-center gap-4">
 		{#if $activeTab}
-			<span class="font-medium">{$activeTab.file.name}</span>
-			{#if $activeTab.isDirty}
+			<span class="font-medium">{$activeTab.file ? $activeTab.file.name : 'Untitled'}</span>
+			{#if $activeTab.isDirty || $activeTab.isUnsaved}
 				<span class="text-gray-500 dark:text-gray-400">● Modified</span>
 			{/if}
 		{:else}

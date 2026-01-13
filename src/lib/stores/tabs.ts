@@ -21,7 +21,7 @@ function generateTabId(filePath: string): string {
 export function openTab(file: FileNode, content: string = '') {
 	tabs.update((currentTabs) => {
 		// Check if file is already open
-		const existingTab = currentTabs.find((tab) => tab.file.path === file.path);
+		const existingTab = currentTabs.find((tab) => tab.file && tab.file.path === file.path);
 
 		if (existingTab) {
 			// Switch to existing tab
@@ -67,10 +67,38 @@ export function closeTab(tabId: string) {
 	});
 }
 
+// Create a new unsaved tab
+export function createNewTab() {
+	const newTab: TabInfo = {
+		id: `tab-untitled-${Date.now()}`,
+		file: null,
+		content: '',
+		isDirty: false,
+		isUnsaved: true
+	};
+
+	tabs.update((currentTabs) => {
+		return [...currentTabs, newTab];
+	});
+
+	activeTabId.set(newTab.id);
+
+	return newTab.id;
+}
+
 // Update tab content
 export function updateTabContent(tabId: string, content: string) {
 	tabs.update((currentTabs) =>
 		currentTabs.map((tab) => (tab.id === tabId ? { ...tab, content, isDirty: true } : tab))
+	);
+}
+
+// Update tab file info after saving an unsaved tab
+export function updateTabFile(tabId: string, file: FileNode) {
+	tabs.update((currentTabs) =>
+		currentTabs.map((tab) =>
+			tab.id === tabId ? { ...tab, file, isDirty: false, isUnsaved: false } : tab
+		)
 	);
 }
 

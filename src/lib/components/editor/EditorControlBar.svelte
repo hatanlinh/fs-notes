@@ -18,7 +18,7 @@
 
 	// Check if there are any dirty tabs
 	const hasDirtyTabs = $derived($tabs.some((tab) => tab.isDirty));
-	const isActiveTabDirty = $derived($activeTab?.isDirty ?? false);
+	const isActiveTabDirty = $derived($activeTab?.isDirty || $activeTab?.isUnsaved || false);
 </script>
 
 <!-- Undo Button -->
