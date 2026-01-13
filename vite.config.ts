@@ -7,5 +7,23 @@ export default defineConfig({
 	server: {
 		port: 3000,
 		strictPort: true
+	},
+	build: {
+		rollupOptions: {
+			output: {
+				manualChunks(id) {
+					// Only apply to client build, not SSR
+					if (id.includes('node_modules')) {
+						if (id.includes('codemirror') || id.includes('@codemirror')) {
+							return 'codemirror';
+						}
+						if (id.includes('@tabler/icons-svelte')) {
+							return 'icons';
+						}
+					}
+				}
+			}
+		},
+		chunkSizeWarningLimit: 600
 	}
 });
