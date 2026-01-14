@@ -2,9 +2,10 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { activeTab, updateTabContent, markTabSaved, tabs, updateTabFile } from '$lib/stores/tabs';
 	import { writeFile, createFile, buildFileTree } from '$lib/services/file-system';
-	import { directoryHandle } from '$lib/stores/directory';
+	import { directoryHandle, storageType, driveRootFolderId } from '$lib/stores/directory';
 	import { setFileTree } from '$lib/stores/file-tree';
 	import type { FileNode } from '$lib/types';
+	import { writeDriveFile, createDriveFile, buildDriveFileTree } from '$lib/services/google-drive';
 	import EditorTabs from './EditorTabs.svelte';
 	import EditorControlBar from './EditorControlBar.svelte';
 	import TextEditor from './TextEditor.svelte';
@@ -50,9 +51,16 @@
 		// Otherwise, save normally
 		if ($activeTab.isDirty && $activeTab.file) {
 			try {
-				const handle = $activeTab.file.handle as FileSystemFileHandle;
-				await writeFile(handle, $activeTab.content);
-				markTabSaved($activeTab.id);
+				if ($activeTab.file.storageType === 'google-drive' && $activeTab.file.driveId) {
+					// Save to Google Drive
+					await writeDriveFile($activeTab.file.driveId, $activeTab.content);
+					markTabSaved($activeTab.id);
+				} else if ($activeTab.file.handle) {
+					// Save to local file system
+					const handle = $activeTab.file.handle as FileSystemFileHandle;
+					await writeFile(handle, $activeTab.content);
+					markTabSaved($activeTab.id);
+				}
 			} catch (err) {
 				console.error('Error saving file:', err);
 			}
@@ -61,8 +69,15 @@
 
 	// Handle saving an unsaved tab with a new file name
 	async function handleSaveNewFile(fileName: string) {
-		if (!currentSavingTabId || !$directoryHandle) {
-			console.error('Cannot save: no tab ID or root directory');
+		if (!currentSavingTabId) {
+			console.error('Cannot save: no tab ID');
+			return;
+		}
+
+		// Check if we have either local directory or Google Drive
+		if (!$directoryHandle && !$driveRootFolderId) {
+			console.error('Cannot save: no storage configured (local or Google Drive)');
+			alert('Please open a local directory or connect to Google Drive first');
 			return;
 		}
 
@@ -70,30 +85,53 @@
 		if (!tab) return;
 
 		try {
-			const fileHandle = await createFile($directoryHandle, fileName);
-			await writeFile(fileHandle, tab.content);
+			let newFile: FileNode;
 
-			// Create FileNode for the new file
-			const newFile: FileNode = {
-				name: fileName,
-				path: fileName,
-				type: 'file',
-				handle: fileHandle
-			};
+			if ($storageType === 'google-drive' && $driveRootFolderId) {
+				// Save to Google Drive
+				const driveFile = await createDriveFile($driveRootFolderId, fileName, tab.content);
+
+				newFile = {
+					name: fileName,
+					path: fileName,
+					type: 'file',
+					storageType: 'google-drive',
+					driveId: driveFile.id,
+					mimeType: driveFile.mimeType
+				};
+
+				// Refresh the file tree to show the new file
+				const tree = await buildDriveFileTree($driveRootFolderId);
+				setFileTree(tree);
+			} else if ($directoryHandle) {
+				// Save to local file system
+				const fileHandle = await createFile($directoryHandle, fileName);
+				await writeFile(fileHandle, tab.content);
+
+				newFile = {
+					name: fileName,
+					path: fileName,
+					type: 'file',
+					storageType: 'local',
+					handle: fileHandle
+				};
+
+				// Refresh the file tree to show the new file
+				const tree = await buildFileTree($directoryHandle);
+				setFileTree(tree);
+			} else {
+				throw new Error('No storage available');
+			}
 
 			// Update the tab with the new file info
 			updateTabFile(currentSavingTabId, newFile);
-
-			// Refresh the file tree to show the new file
-			const tree = await buildFileTree($directoryHandle);
-			setFileTree(tree);
 
 			// Reset state
 			currentSavingTabId = null;
 			showSaveDialog = false;
 		} catch (err) {
 			console.error('Error saving new file:', err);
-			alert('Failed to save file: ' + (err as Error).message);
+			alert(`Failed to save file: ${err instanceof Error ? err.message : 'Unknown error'}`);
 		}
 	}
 

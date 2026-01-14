@@ -1,8 +1,15 @@
 <script lang="ts">
-	import { IconFile, IconFolder, IconFolderOpen, IconChevronRight, IconChevronDown } from '@tabler/icons-svelte';
+	import {
+		IconFile,
+		IconFolder,
+		IconFolderOpen,
+		IconChevronRight,
+		IconChevronDown
+	} from '@tabler/icons-svelte';
 	import type { FileNode } from '$lib/types';
 	import { openTab } from '$lib/stores/tabs';
 	import { readFile } from '$lib/services/file-system';
+	import { readDriveFile } from '$lib/services/google-drive';
 	import FileTreeItem from './FileTreeItem.svelte';
 
 	interface Props {
@@ -24,11 +31,23 @@
 		if (node.type === 'file') {
 			// Open file in editor
 			try {
-				const handle = node.handle as FileSystemFileHandle;
-				const content = await readFile(handle);
+				let content: string;
+
+				if (node.storageType === 'google-drive' && node.driveId) {
+					// Read from Google Drive
+					content = await readDriveFile(node.driveId);
+				} else if (node.handle) {
+					// Read from local file system
+					const handle = node.handle as FileSystemFileHandle;
+					content = await readFile(handle);
+				} else {
+					throw new Error('No file handle or Drive ID available');
+				}
+
 				openTab(node, content);
 			} catch (err) {
 				console.error('Error opening file:', err);
+				alert(`Failed to open file: ${err instanceof Error ? err.message : 'Unknown error'}`);
 			}
 		} else {
 			// Toggle directory expansion
@@ -50,7 +69,7 @@
 	>
 		<!-- Chevron for directories -->
 		{#if node.type === 'directory'}
-			<span class="flex-shrink-0 text-gray-500">
+			<span class="shrink-0 text-gray-500">
 				{#if isExpanded}
 					<IconChevronDown size={16} />
 				{:else}
@@ -62,7 +81,7 @@
 		{/if}
 
 		<!-- Icon -->
-		<span class="flex-shrink-0 text-gray-600 dark:text-gray-400">
+		<span class="shrink-0 text-gray-600 dark:text-gray-400">
 			{#if node.type === 'directory'}
 				{#if isExpanded}
 					<IconFolderOpen size={16} />

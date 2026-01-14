@@ -9,6 +9,35 @@ declare global {
 		// interface Platform {}
 	}
 
+	// Environment variables
+	namespace NodeJS {
+		interface ProcessEnv {
+			PUBLIC_GOOGLE_CLIENT_ID: string;
+			PUBLIC_GOOGLE_DISCOVERY_DOC: string;
+		}
+	}
+
+	// Google API type declarations
+	const gapi: typeof import('gapi');
+	const google: {
+		accounts: {
+			oauth2: {
+				initTokenClient(config: {
+					client_id: string;
+					scope: string;
+					callback: (response: {
+						access_token?: string;
+						error?: string;
+						expires_in?: number;
+					}) => void;
+				}): {
+					requestAccessToken(options: { prompt?: string }): void;
+				};
+				revoke(token: string, callback?: () => void): void;
+			};
+		};
+	};
+
 	// File System Access API type declarations
 	interface Window {
 		showDirectoryPicker(options?: {

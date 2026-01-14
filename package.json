@@ -43,6 +43,9 @@
 		"@codemirror/state": "^6.5.3",
 		"@codemirror/view": "^6.39.9",
 		"@tabler/icons-svelte": "^3.36.1",
+		"@types/gapi": "^0.0.47",
+		"@types/gapi.auth2": "^0.0.61",
+		"@types/gapi.client.drive": "^3.0.15",
 		"codemirror": "^6.0.2",
 		"marked": "^17.0.1"
 	}

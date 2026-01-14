@@ -19,6 +19,7 @@ export async function buildFileTree(
 					name: entry.name,
 					path,
 					type: 'directory',
+					storageType: 'local',
 					handle: entry,
 					children: children.sort((a, b) => {
 						// Directories first, then alphabetical
@@ -33,6 +34,7 @@ export async function buildFileTree(
 					name: entry.name,
 					path,
 					type: 'file',
+					storageType: 'local',
 					handle: entry
 				});
 			}
@@ -66,10 +68,7 @@ export async function readFile(fileHandle: FileSystemFileHandle): Promise<string
 /**
  * Write content to a file handle
  */
-export async function writeFile(
-	fileHandle: FileSystemFileHandle,
-	content: string
-): Promise<void> {
+export async function writeFile(fileHandle: FileSystemFileHandle, content: string): Promise<void> {
 	try {
 		const writable = await fileHandle.createWritable();
 		await writable.write(content);

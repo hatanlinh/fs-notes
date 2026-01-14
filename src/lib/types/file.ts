@@ -1,10 +1,25 @@
 export type FileType = 'file' | 'directory';
 
+export type StorageType = 'local' | 'google-drive';
+
+export interface GoogleDriveFile {
+	id: string;
+	name: string;
+	mimeType: string;
+	parents?: string[];
+	trashed?: boolean;
+}
+
 export interface FileNode {
 	name: string;
 	path: string;
 	type: FileType;
+	storageType: StorageType;
+	// Local file system properties
 	handle?: FileSystemFileHandle | FileSystemDirectoryHandle;
+	// Google Drive properties
+	driveId?: string;
+	mimeType?: string;
 	children?: FileNode[];
 }
 
