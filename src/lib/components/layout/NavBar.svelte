@@ -2,6 +2,7 @@
 	import { IconFolderOpen, IconBrandGoogleDrive, IconX } from '@tabler/icons-svelte';
 	import {
 		selectDirectory,
+		directoryHandle,
 		driveRootFolderId,
 		driveRootFolderName,
 		storageType
@@ -79,7 +80,12 @@
 			aria-label="Open local directory"
 			title="Open local directory"
 		>
-			<IconFolderOpen size={20} />
+			<IconFolderOpen
+				size={20}
+				class={$storageType === 'local' && $directoryHandle
+					? 'text-blue-600 dark:text-blue-400'
+					: ''}
+			/>
 
 			<!-- Tooltip -->
 			<span
@@ -100,12 +106,6 @@
 				size={20}
 				class={$isGoogleAuthenticated ? 'text-blue-600 dark:text-blue-400' : ''}
 			/>
-
-			{#if $isGoogleAuthenticated}
-				<span
-					class="absolute -top-1 -right-1 h-3 w-3 rounded-full border-2 border-white bg-green-500 dark:border-gray-900"
-				></span>
-			{/if}
 
 			<span
 				class="pointer-events-none absolute right-0 bottom-full mb-2 rounded bg-gray-900 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-700"
