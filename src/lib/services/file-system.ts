@@ -1,4 +1,5 @@
 import type { FileNode } from '$lib/types';
+import { loadingState } from '$lib/stores/loading';
 
 /**
  * Build a file tree from a directory handle
@@ -57,11 +58,14 @@ export async function buildFileTree(
  */
 export async function readFile(fileHandle: FileSystemFileHandle): Promise<string> {
 	try {
+		loadingState.start('file-load', fileHandle.name, fileHandle.name);
 		const file = await fileHandle.getFile();
 		return await file.text();
 	} catch (err) {
 		console.error('Error reading file:', err);
 		throw err;
+	} finally {
+		loadingState.end('file-load', fileHandle.name);
 	}
 }
 
@@ -70,12 +74,15 @@ export async function readFile(fileHandle: FileSystemFileHandle): Promise<string
  */
 export async function writeFile(fileHandle: FileSystemFileHandle, content: string): Promise<void> {
 	try {
+		loadingState.start('file-save', fileHandle.name, fileHandle.name);
 		const writable = await fileHandle.createWritable();
 		await writable.write(content);
 		await writable.close();
 	} catch (err) {
 		console.error('Error writing file:', err);
 		throw err;
+	} finally {
+		loadingState.end('file-save', fileHandle.name);
 	}
 }
 
@@ -87,11 +94,14 @@ export async function createFile(
 	fileName: string
 ): Promise<FileSystemFileHandle> {
 	try {
+		loadingState.start('file-create', undefined, fileName);
 		const fileHandle = await dirHandle.getFileHandle(fileName, { create: true });
 		return fileHandle;
 	} catch (err) {
 		console.error('Error creating file:', err);
 		throw err;
+	} finally {
+		loadingState.end('file-create', undefined);
 	}
 }
 

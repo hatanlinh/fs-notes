@@ -28,18 +28,15 @@
 		try {
 			isConnectingDrive = true;
 
-			// Sign in if not already authenticated
 			if (!$isGoogleAuthenticated) {
 				await signInWithGoogle();
 			}
 
-			// Find or create fs-notes folder
 			const fsNotesFolder = await findOrCreateFsNotesFolder();
 			driveRootFolderId.set(fsNotesFolder.id);
 			driveRootFolderName.set(fsNotesFolder.name);
 			storageType.set('google-drive');
 
-			// Build file tree from fs-notes folder
 			const tree = await buildDriveFileTree(fsNotesFolder.id);
 			setFileTree(tree);
 		} catch (error) {
@@ -56,7 +53,6 @@
 		try {
 			await disconnectGoogleDrive();
 
-			// Clear Drive-related stores
 			driveRootFolderId.set(null);
 			driveRootFolderName.set(null);
 			storageType.set('local');
@@ -93,7 +89,6 @@
 			</span>
 		</button>
 
-		<!-- Google Drive Button -->
 		<button
 			onclick={handleConnectGoogleDrive}
 			disabled={isConnectingDrive}
@@ -106,14 +101,12 @@
 				class={$isGoogleAuthenticated ? 'text-blue-600 dark:text-blue-400' : ''}
 			/>
 
-			<!-- Connected indicator -->
 			{#if $isGoogleAuthenticated}
 				<span
 					class="absolute -top-1 -right-1 h-3 w-3 rounded-full border-2 border-white bg-green-500 dark:border-gray-900"
 				></span>
 			{/if}
 
-			<!-- Tooltip -->
 			<span
 				class="pointer-events-none absolute right-0 bottom-full mb-2 rounded bg-gray-900 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-700"
 			>

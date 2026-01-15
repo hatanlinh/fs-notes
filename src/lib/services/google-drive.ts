@@ -1,5 +1,6 @@
 import type { FileNode, GoogleDriveFile } from '$lib/types';
 import { getAccessToken } from './google-auth';
+import { loadingState } from '$lib/stores/loading';
 
 const FOLDER_MIME_TYPE = 'application/vnd.google-apps.folder';
 const TEXT_MIME_TYPE = 'text/plain';
@@ -86,6 +87,7 @@ export async function buildDriveFileTree(
 	const nodes: FileNode[] = [];
 
 	try {
+		loadingState.start('file-tree-load', folderId);
 		const files = await listFiles(folderId);
 
 		for (const file of files) {
@@ -124,6 +126,8 @@ export async function buildDriveFileTree(
 		}
 	} catch (error) {
 		console.error('Error building Drive file tree:', error);
+	} finally {
+		loadingState.end('file-tree-load', folderId);
 	}
 
 	return nodes.sort((a, b) => {
@@ -140,6 +144,7 @@ export async function buildDriveFileTree(
  */
 export async function readDriveFile(fileId: string): Promise<string> {
 	try {
+		loadingState.start('file-load', fileId);
 		const token = getAccessToken();
 		if (!token) {
 			throw new Error('Not authenticated');
@@ -160,6 +165,8 @@ export async function readDriveFile(fileId: string): Promise<string> {
 	} catch (error) {
 		console.error('Error reading Drive file:', error);
 		throw error;
+	} finally {
+		loadingState.end('file-load', fileId);
 	}
 }
 
@@ -168,6 +175,7 @@ export async function readDriveFile(fileId: string): Promise<string> {
  */
 export async function writeDriveFile(fileId: string, content: string): Promise<void> {
 	try {
+		loadingState.start('file-save', fileId);
 		const token = getAccessToken();
 		if (!token) {
 			throw new Error('Not authenticated');
@@ -211,6 +219,8 @@ export async function writeDriveFile(fileId: string, content: string): Promise<v
 	} catch (error) {
 		console.error('Error writing Drive file:', error);
 		throw error;
+	} finally {
+		loadingState.end('file-save', fileId);
 	}
 }
 
@@ -223,6 +233,7 @@ export async function createDriveFile(
 	content: string = ''
 ): Promise<GoogleDriveFile> {
 	try {
+		loadingState.start('file-create', undefined, name);
 		const token = getAccessToken();
 		if (!token) {
 			throw new Error('Not authenticated');
@@ -269,6 +280,8 @@ export async function createDriveFile(
 	} catch (error) {
 		console.error('Error creating Drive file:', error);
 		throw error;
+	} finally {
+		loadingState.end('file-create', undefined);
 	}
 }
 

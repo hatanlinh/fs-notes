@@ -4,12 +4,14 @@
 		IconFolder,
 		IconFolderOpen,
 		IconChevronRight,
-		IconChevronDown
+		IconChevronDown,
+		IconLoader
 	} from '@tabler/icons-svelte';
 	import type { FileNode } from '$lib/types';
 	import { openTab } from '$lib/stores/tabs';
 	import { readFile } from '$lib/services/file-system';
 	import { readDriveFile } from '$lib/services/google-drive';
+	import { loadingState } from '$lib/stores/loading';
 	import FileTreeItem from './FileTreeItem.svelte';
 
 	interface Props {
@@ -20,6 +22,13 @@
 	let { node, level = 0 }: Props = $props();
 
 	let isExpanded = $state(false);
+
+	const isLoading = $derived(
+		$loadingState.some(
+			(s) =>
+				s.operation === 'file-load' && (s.fileId === node.driveId || s.fileId === node.handle?.name)
+		)
+	);
 
 	function toggleExpand() {
 		if (node.type === 'directory') {
@@ -82,7 +91,9 @@
 
 		<!-- Icon -->
 		<span class="shrink-0 text-gray-600 dark:text-gray-400">
-			{#if node.type === 'directory'}
+			{#if isLoading}
+				<IconLoader size={16} class="animate-spin text-blue-600 dark:text-blue-400" />
+			{:else if node.type === 'directory'}
 				{#if isExpanded}
 					<IconFolderOpen size={16} />
 				{:else}
