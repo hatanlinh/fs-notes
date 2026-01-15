@@ -62,6 +62,12 @@
 			console.error('Error disconnecting from Google Drive:', error);
 		}
 	}
+
+	function handleDisconnectLocal() {
+		directoryHandle.set(null);
+		storageType.set('local');
+		clearFileTree();
+	}
 </script>
 
 <nav
@@ -113,6 +119,24 @@
 				{$isGoogleAuthenticated ? 'Open Google Drive' : 'Connect to Google Drive'}
 			</span>
 		</button>
+
+		<!-- Disconnect Local Directory Button -->
+		{#if $storageType === 'local' && $directoryHandle}
+			<button
+				onclick={handleDisconnectLocal}
+				class="group relative flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-red-100 focus:ring-2 focus:ring-red-500 focus:outline-none dark:text-gray-300 dark:hover:bg-red-900/20"
+				aria-label="Close local directory"
+				title="Close local directory"
+			>
+				<IconX size={20} class="text-red-600 dark:text-red-400" />
+
+				<span
+					class="pointer-events-none absolute right-0 bottom-full mb-2 rounded bg-gray-900 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-700"
+				>
+					Close local directory
+				</span>
+			</button>
+		{/if}
 
 		<!-- Disconnect Google Drive Button -->
 		{#if $isGoogleAuthenticated}
