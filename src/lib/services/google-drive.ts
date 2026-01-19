@@ -225,7 +225,49 @@ export async function writeDriveFile(fileId: string, content: string): Promise<v
 }
 
 /**
+ * Helper function to find or create a folder by name in a parent folder
+ */
+async function findOrCreateFolder(parentId: string, folderName: string): Promise<GoogleDriveFile> {
+	const response = await gapi.client.drive.files.list({
+		q: `name = '${folderName.replace(/'/g, "\\'")}' and mimeType = '${FOLDER_MIME_TYPE}' and trashed = false and '${parentId}' in parents`,
+		fields: 'files(id, name, mimeType, parents)',
+		pageSize: 1
+	});
+
+	const files = response.result.files || [];
+	if (files.length > 0) {
+		return files[0] as GoogleDriveFile;
+	}
+
+	const createResponse = await gapi.client.drive.files.create({
+		resource: {
+			name: folderName,
+			mimeType: FOLDER_MIME_TYPE,
+			parents: [parentId]
+		},
+		fields: 'id, name, mimeType, parents'
+	});
+
+	return createResponse.result as GoogleDriveFile;
+}
+
+/**
+ * Helper function to navigate to or create a folder path
+ */
+async function getOrCreateFolderByPath(parentId: string, path: string[]): Promise<string> {
+	let currentParentId = parentId;
+
+	for (const folderName of path) {
+		const folder = await findOrCreateFolder(currentParentId, folderName);
+		currentParentId = folder.id;
+	}
+
+	return currentParentId;
+}
+
+/**
  * Create a new file in Google Drive
+ * Supports nested paths like "folder/subfolder/file.txt"
  */
 export async function createDriveFile(
 	parentId: string,
@@ -239,14 +281,27 @@ export async function createDriveFile(
 			throw new Error('Not authenticated');
 		}
 
+		const parts = name.split('/').filter((p) => p.length > 0);
+		if (parts.length === 0) {
+			throw new Error('Invalid file name');
+		}
+
+		let actualParentId = parentId;
+		if (parts.length > 1) {
+			const folderPath = parts.slice(0, -1);
+			actualParentId = await getOrCreateFolderByPath(parentId, folderPath);
+		}
+
+		const actualFileName = parts[parts.length - 1];
+
 		const boundary = '-------314159265358979323846';
 		const delimiter = '\r\n--' + boundary + '\r\n';
 		const close_delim = '\r\n--' + boundary + '--';
 
 		const metadata = {
-			name: name,
+			name: actualFileName,
 			mimeType: TEXT_MIME_TYPE,
-			parents: [parentId]
+			parents: [actualParentId]
 		};
 
 		const multipartRequestBody =
@@ -287,19 +342,28 @@ export async function createDriveFile(
 
 /**
  * Create a new folder in Google Drive
+ * Supports nested paths like "folder/subfolder/newdir"
  */
 export async function createDriveFolder(parentId: string, name: string): Promise<GoogleDriveFile> {
 	try {
-		const response = await gapi.client.drive.files.create({
-			resource: {
-				name: name,
-				mimeType: FOLDER_MIME_TYPE,
-				parents: [parentId]
-			},
-			fields: 'id, name, mimeType, parents'
-		});
+		const parts = name.split('/').filter((p) => p.length > 0);
 
-		return response.result as GoogleDriveFile;
+		if (parts.length === 0) {
+			throw new Error('Invalid folder name');
+		}
+
+		let currentParentId = parentId;
+		for (const folderName of parts) {
+			const folder = await findOrCreateFolder(currentParentId, folderName);
+			currentParentId = folder.id;
+		}
+
+		return await gapi.client.drive.files
+			.get({
+				fileId: currentParentId,
+				fields: 'id, name, mimeType, parents'
+			})
+			.then((response) => response.result as GoogleDriveFile);
 	} catch (error) {
 		console.error('Error creating Drive folder:', error);
 		throw error;

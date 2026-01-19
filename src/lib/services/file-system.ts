@@ -88,6 +88,7 @@ export async function writeFile(fileHandle: FileSystemFileHandle, content: strin
 
 /**
  * Create a new file in a directory
+ * Supports nested paths like "folder/subfolder/file.txt"
  */
 export async function createFile(
 	dirHandle: FileSystemDirectoryHandle,
@@ -95,7 +96,19 @@ export async function createFile(
 ): Promise<FileSystemFileHandle> {
 	try {
 		loadingState.start('file-create', undefined, fileName);
-		const fileHandle = await dirHandle.getFileHandle(fileName, { create: true });
+
+		const parts = fileName.split('/').filter((p) => p.length > 0);
+		if (parts.length === 0) {
+			throw new Error('Invalid file name');
+		}
+
+		let currentHandle = dirHandle;
+		for (let i = 0; i < parts.length - 1; i++) {
+			currentHandle = await currentHandle.getDirectoryHandle(parts[i], { create: true });
+		}
+
+		const actualFileName = parts[parts.length - 1];
+		const fileHandle = await currentHandle.getFileHandle(actualFileName, { create: true });
 		return fileHandle;
 	} catch (err) {
 		console.error('Error creating file:', err);
@@ -107,14 +120,24 @@ export async function createFile(
 
 /**
  * Create a new directory
+ * Supports nested paths like "folder/subfolder/newdir"
  */
 export async function createDirectory(
 	dirHandle: FileSystemDirectoryHandle,
 	dirName: string
 ): Promise<FileSystemDirectoryHandle> {
 	try {
-		const newDirHandle = await dirHandle.getDirectoryHandle(dirName, { create: true });
-		return newDirHandle;
+		const parts = dirName.split('/').filter((p) => p.length > 0);
+		if (parts.length === 0) {
+			throw new Error('Invalid directory name');
+		}
+
+		let currentHandle = dirHandle;
+		for (const part of parts) {
+			currentHandle = await currentHandle.getDirectoryHandle(part, { create: true });
+		}
+
+		return currentHandle;
 	} catch (err) {
 		console.error('Error creating directory:', err);
 		throw err;
