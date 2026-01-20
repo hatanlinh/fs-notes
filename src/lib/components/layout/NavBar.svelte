@@ -12,6 +12,7 @@
 	import { isGoogleAuthenticated } from '$lib/stores/google-auth';
 	import { signInWithGoogle, disconnectGoogleDrive } from '$lib/services/google-auth';
 	import { buildDriveFileTree, findOrCreateFsNotesFolder } from '$lib/services/google-drive';
+	import { closeTabsByStorageType } from '$lib/stores/tabs';
 
 	let isConnectingDrive = false;
 
@@ -58,6 +59,7 @@
 			driveRootFolderName.set(null);
 			storageType.set('local');
 			clearFileTree();
+			closeTabsByStorageType('google-drive');
 		} catch (error) {
 			console.error('Error disconnecting from Google Drive:', error);
 		}
@@ -67,6 +69,7 @@
 		directoryHandle.set(null);
 		storageType.set('local');
 		clearFileTree();
+		closeTabsByStorageType('local');
 	}
 </script>
 

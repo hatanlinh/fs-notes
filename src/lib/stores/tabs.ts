@@ -1,5 +1,5 @@
 import { writable, derived } from 'svelte/store';
-import type { TabInfo, FileNode } from '$lib/types';
+import type { TabInfo, FileNode, StorageType } from '$lib/types';
 
 // Store for all open tabs
 export const tabs = writable<TabInfo[]>([]);
@@ -109,7 +109,34 @@ export function markTabSaved(tabId: string) {
 	);
 }
 
-// Close all tabs
+export function closeTabsByStorageType(storageType: StorageType) {
+	tabs.update((currentTabs) => {
+		const tabsToKeep = currentTabs.filter(
+			(tab) => !tab.file || tab.file.storageType !== storageType
+		);
+
+		if (tabsToKeep.length === currentTabs.length) {
+			return currentTabs;
+		}
+
+		activeTabId.update((currentActiveId) => {
+			const activeTabRemoved = currentTabs.some(
+				(tab) => tab.id === currentActiveId && tab.file && tab.file.storageType === storageType
+			);
+
+			if (activeTabRemoved) {
+				if (tabsToKeep.length > 0) {
+					return tabsToKeep[0].id;
+				}
+				return null;
+			}
+			return currentActiveId;
+		});
+
+		return tabsToKeep;
+	});
+}
+
 export function closeAllTabs() {
 	tabs.set([]);
 	activeTabId.set(null);
