@@ -1,5 +1,6 @@
 import { writable, derived } from 'svelte/store';
 import type { TabInfo, FileNode, StorageType } from '$lib/types';
+import { generateDefaultFileName } from '$lib/utils/filename';
 
 // Store for all open tabs
 export const tabs = writable<TabInfo[]>([]);
@@ -69,12 +70,14 @@ export function closeTab(tabId: string) {
 
 // Create a new unsaved tab
 export function createNewTab() {
+	const defaultFileName = generateDefaultFileName();
 	const newTab: TabInfo = {
-		id: `tab-untitled-${Date.now()}`,
+		id: `tab-${defaultFileName}-${Date.now()}`,
 		file: null,
 		content: '',
 		isDirty: false,
-		isUnsaved: true
+		isUnsaved: true,
+		defaultFileName
 	};
 
 	tabs.update((currentTabs) => {

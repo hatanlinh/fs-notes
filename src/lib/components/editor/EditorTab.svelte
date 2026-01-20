@@ -10,7 +10,7 @@
 	let { tab }: Props = $props();
 
 	let isActive = $derived($activeTabId === tab.id);
-	let displayName = $derived(tab.file ? tab.file.name : 'Untitled');
+	let displayName = $derived(tab.file ? tab.file.name : tab.defaultFileName || 'Untitled');
 
 	function handleClose(e: MouseEvent) {
 		e.stopPropagation();
@@ -26,6 +26,7 @@
 	class="flex min-w-50 items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors {isActive
 		? 'bg-gray-300 text-gray-600 dark:bg-gray-900 dark:text-gray-100'
 		: 'bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-200'}"
+	title={displayName}
 >
 	<button onclick={handleClick} class="flex min-w-0 flex-1 items-center gap-2">
 		<span class="max-w-30 truncate {tab.isUnsaved ? 'italic' : ''}">{displayName}</span>

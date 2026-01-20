@@ -254,5 +254,6 @@
 		bind:isOpen={showSaveDialog}
 		onClose={handleCloseSaveDialog}
 		onSave={handleSaveNewFile}
+		defaultFileName={$activeTab?.defaultFileName || 'untitled.txt'}
 	/>
 </main>

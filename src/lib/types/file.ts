@@ -29,6 +29,7 @@ export interface TabInfo {
 	content: string;
 	isDirty: boolean;
 	isUnsaved?: boolean; // true for new tabs that haven't been saved yet
+	defaultFileName?: string;
 	cursorPosition?: {
 		line: number;
 		column: number;
