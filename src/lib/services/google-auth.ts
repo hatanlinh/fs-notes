@@ -3,7 +3,7 @@ import { env } from '$env/dynamic/public';
 
 const GOOGLE_DRIVE_SCOPES = 'https://www.googleapis.com/auth/drive.file';
 
-let tokenClient: any | null = null;
+let tokenClient: google.accounts.oauth2.TokenClient | null = null;
 let gapiInited = false;
 let gisInited = false;
 
@@ -91,7 +91,7 @@ export async function signInWithGoogle(): Promise<void> {
 	return new Promise((resolve, reject) => {
 		const originalCallback = tokenClient.callback;
 
-		tokenClient.callback = (response: any) => {
+		tokenClient.callback = (response: google.accounts.oauth2.TokenResponse) => {
 			originalCallback(response);
 
 			if (response.error) {

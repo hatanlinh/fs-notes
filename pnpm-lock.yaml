@@ -32,6 +32,9 @@ importers:
       '@types/gapi.client.drive-v3':
         specifier: ^0.0.5
         version: 0.0.5
+      '@types/google.accounts':
+        specifier: ^0.0.18
+        version: 0.0.18
       codemirror:
         specifier: ^6.0.2
         version: 6.0.2
@@ -706,6 +709,9 @@ packages:
 
   '@types/gapi@0.0.47':
     resolution: {integrity: sha512-/ZsLuq6BffMgbKMtZyDZ8vwQvTyKhKQ1G2K6VyWCgtHHhfSSXbk4+4JwImZiTjWNXfI2q1ZStAwFFHSkNoTkHA==}
+
+  '@types/google.accounts@0.0.18':
+    resolution: {integrity: sha512-yHaPznll97ZnMJlPABHyeiIlLn3u6gQaUjA5k/O9lrrpgFB9VT10CKPLuKM0qTHMl50uXpW5sIcG+utm8jMOHw==}
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
@@ -2050,6 +2056,8 @@ snapshots:
   '@types/gapi.client@1.0.8': {}
 
   '@types/gapi@0.0.47': {}
+
+  '@types/google.accounts@0.0.18': {}
 
   '@types/json-schema@7.0.15': {}
 

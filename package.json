@@ -46,6 +46,7 @@
 		"@types/gapi": "^0.0.47",
 		"@types/gapi.auth2": "^0.0.61",
 		"@types/gapi.client.drive-v3": "^0.0.5",
+		"@types/google.accounts": "^0.0.18",
 		"codemirror": "^6.0.2",
 		"marked": "^17.0.1"
 	}
