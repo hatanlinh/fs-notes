@@ -11,7 +11,7 @@
 	import { setFileTree, clearFileTree } from '$lib/stores/file-tree';
 	import { isGoogleAuthenticated } from '$lib/stores/google-auth';
 	import { signInWithGoogle, disconnectGoogleDrive } from '$lib/services/google-auth';
-	import { buildDriveFileTree, findOrCreateFsNotesFolder } from '$lib/services/google-drive';
+	import { buildDriveFileTree, findOrCreateAppFolder } from '$lib/services/google-drive';
 	import { closeTabsByStorageType } from '$lib/stores/tabs';
 
 	let isConnectingDrive = false;
@@ -34,12 +34,12 @@
 				await signInWithGoogle();
 			}
 
-			const fsNotesFolder = await findOrCreateFsNotesFolder();
-			driveRootFolderId.set(fsNotesFolder.id);
-			driveRootFolderName.set(fsNotesFolder.name);
+			const appFolder = await findOrCreateAppFolder();
+			driveRootFolderId.set(appFolder.id);
+			driveRootFolderName.set(appFolder.name);
 			storageType.set('google-drive');
 
-			const tree = await buildDriveFileTree(fsNotesFolder.id);
+			const tree = await buildDriveFileTree(appFolder.id);
 			setFileTree(tree);
 		} catch (error) {
 			console.error('Error connecting to Google Drive:', error);

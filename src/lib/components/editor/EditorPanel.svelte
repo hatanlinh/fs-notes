@@ -37,26 +37,21 @@
 		}
 	}
 
-	// Save current active tab
 	async function handleSave() {
 		if (!$activeTab) return;
 
-		// If it's an unsaved tab, show the save dialog
 		if ($activeTab.isUnsaved) {
 			currentSavingTabId = $activeTab.id;
 			showSaveDialog = true;
 			return;
 		}
 
-		// Otherwise, save normally
 		if ($activeTab.isDirty && $activeTab.file) {
 			try {
 				if ($activeTab.file.storageType === 'google-drive' && $activeTab.file.driveId) {
-					// Save to Google Drive
 					await writeDriveFile($activeTab.file.driveId, $activeTab.content);
 					markTabSaved($activeTab.id);
 				} else if ($activeTab.file.handle) {
-					// Save to local file system
 					const handle = $activeTab.file.handle as FileSystemFileHandle;
 					await writeFile(handle, $activeTab.content);
 					markTabSaved($activeTab.id);
@@ -67,14 +62,12 @@
 		}
 	}
 
-	// Handle saving an unsaved tab with a new file name
 	async function handleSaveNewFile(fileName: string) {
 		if (!currentSavingTabId) {
 			console.error('Cannot save: no tab ID');
 			return;
 		}
 
-		// Check if we have either local directory or Google Drive
 		if (!$directoryHandle && !$driveRootFolderId) {
 			console.error('Cannot save: no storage configured (local or Google Drive)');
 			alert('Please open a local directory or connect to Google Drive first');
@@ -88,7 +81,6 @@
 			let newFile: FileNode;
 
 			if ($storageType === 'google-drive' && $driveRootFolderId) {
-				// Save to Google Drive
 				const driveFile = await createDriveFile($driveRootFolderId, fileName, tab.content);
 
 				newFile = {
@@ -100,11 +92,9 @@
 					mimeType: driveFile.mimeType
 				};
 
-				// Refresh the file tree to show the new file
 				const tree = await buildDriveFileTree($driveRootFolderId);
 				setFileTree(tree);
 			} else if ($directoryHandle) {
-				// Save to local file system
 				const fileHandle = await createFile($directoryHandle, fileName);
 				await writeFile(fileHandle, tab.content);
 
@@ -116,17 +106,14 @@
 					handle: fileHandle
 				};
 
-				// Refresh the file tree to show the new file
 				const tree = await buildFileTree($directoryHandle);
 				setFileTree(tree);
 			} else {
 				throw new Error('No storage available');
 			}
 
-			// Update the tab with the new file info
 			updateTabFile(currentSavingTabId, newFile);
 
-			// Reset state
 			currentSavingTabId = null;
 			showSaveDialog = false;
 		} catch (err) {

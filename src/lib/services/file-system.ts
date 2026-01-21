@@ -1,9 +1,6 @@
 import type { FileNode } from '$lib/types';
 import { loadingState } from '$lib/stores/loading';
 
-/**
- * Build a file tree from a directory handle
- */
 export async function buildFileTree(
 	dirHandle: FileSystemDirectoryHandle,
 	parentPath: string = ''
@@ -53,9 +50,6 @@ export async function buildFileTree(
 	});
 }
 
-/**
- * Read file content from a file handle
- */
 export async function readFile(fileHandle: FileSystemFileHandle): Promise<string> {
 	try {
 		loadingState.start('file-load', fileHandle.name, fileHandle.name);
@@ -69,9 +63,6 @@ export async function readFile(fileHandle: FileSystemFileHandle): Promise<string
 	}
 }
 
-/**
- * Write content to a file handle
- */
 export async function writeFile(fileHandle: FileSystemFileHandle, content: string): Promise<void> {
 	try {
 		loadingState.start('file-save', fileHandle.name, fileHandle.name);
@@ -86,10 +77,6 @@ export async function writeFile(fileHandle: FileSystemFileHandle, content: strin
 	}
 }
 
-/**
- * Create a new file in a directory
- * Supports nested paths like "folder/subfolder/file.txt"
- */
 export async function createFile(
 	dirHandle: FileSystemDirectoryHandle,
 	fileName: string
@@ -118,10 +105,6 @@ export async function createFile(
 	}
 }
 
-/**
- * Create a new directory
- * Supports nested paths like "folder/subfolder/newdir"
- */
 export async function createDirectory(
 	dirHandle: FileSystemDirectoryHandle,
 	dirName: string
@@ -144,9 +127,6 @@ export async function createDirectory(
 	}
 }
 
-/**
- * Delete a file or directory
- */
 export async function deleteEntry(
 	parentHandle: FileSystemDirectoryHandle,
 	entryName: string,
@@ -160,9 +140,6 @@ export async function deleteEntry(
 	}
 }
 
-/**
- * Get a file or directory handle by path
- */
 export async function getHandleByPath(
 	rootHandle: FileSystemDirectoryHandle,
 	path: string
@@ -180,11 +157,9 @@ export async function getHandleByPath(
 				return null;
 			}
 
-			// Try to get as directory first
 			try {
 				currentHandle = await currentHandle.getDirectoryHandle(part);
 			} catch {
-				// If not a directory, try as file
 				if (isLast) {
 					currentHandle = await currentHandle.getFileHandle(part);
 				} else {
@@ -200,9 +175,6 @@ export async function getHandleByPath(
 	}
 }
 
-/**
- * Check if File System Access API is supported
- */
 export function isFileSystemAccessSupported(): boolean {
 	return 'showDirectoryPicker' in window;
 }

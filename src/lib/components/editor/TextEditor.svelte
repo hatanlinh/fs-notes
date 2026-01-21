@@ -194,14 +194,12 @@
 	}
 
 	onMount(() => {
-		// Detect if dark mode is active using prefers-color-scheme
 		const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 		const hasClassDark = document.documentElement.classList.contains('dark');
 		const isDarkMode = hasClassDark || prefersDark;
 
 		createEditor(isDarkMode);
 
-		// Watch for theme changes via class
 		themeObserver = new MutationObserver((mutations) => {
 			for (const mutation of mutations) {
 				if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
@@ -219,7 +217,6 @@
 			attributeFilter: ['class']
 		});
 
-		// Watch for system theme changes
 		const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 		const handleMediaChange = (e: MediaQueryListEvent) => {
 			const hasClassDark = document.documentElement.classList.contains('dark');
@@ -245,7 +242,6 @@
 		}
 	});
 
-	// Update editor content when prop changes
 	$effect(() => {
 		if (editorView && content !== editorView.state.doc.toString()) {
 			isUpdatingFromProp = true;
@@ -256,7 +252,6 @@
 					insert: content
 				}
 			});
-			// Reset flag after dispatch completes
 			setTimeout(() => {
 				isUpdatingFromProp = false;
 			}, 0);

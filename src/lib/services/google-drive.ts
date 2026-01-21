@@ -5,47 +5,25 @@ import { loadingState } from '$lib/stores/loading';
 const FOLDER_MIME_TYPE = 'application/vnd.google-apps.folder';
 const TEXT_MIME_TYPE = 'text/plain';
 
-/**
- * Get user's Drive root folder
- */
-export async function getRootFolder(): Promise<GoogleDriveFile> {
+export async function findOrCreateAppFolder(): Promise<GoogleDriveFile> {
 	try {
-		const response = await gapi.client.drive.files.get({
-			fileId: 'root',
-			fields: 'id, name, mimeType'
-		});
-
-		return response.result as GoogleDriveFile;
-	} catch (error) {
-		console.error('Error getting root folder:', error);
-		throw error;
-	}
-}
-
-/**
- * Find or create the "fs-notes" folder in Google Drive root
- */
-export async function findOrCreateFsNotesFolder(): Promise<GoogleDriveFile> {
-	try {
-		// First, search for existing "fs-notes" folder
+		const app_folder = 'fs-notes';
 		const response = await gapi.client.drive.files.list({
-			q: "name = 'fs-notes' and mimeType = 'application/vnd.google-apps.folder' and trashed = false and 'root' in parents",
+			q: `name = '${app_folder}' and mimeType = 'application/vnd.google-apps.folder' and trashed = false and 'root' in parents`,
 			fields: 'files(id, name, mimeType, parents)',
 			pageSize: 1
 		});
 
 		const files = response.result.files || [];
 
-		// If folder exists, return it
 		if (files.length > 0) {
 			return files[0] as GoogleDriveFile;
 		}
 
-		// If not found, create it
-		console.log('fs-notes folder not found, creating...');
+		console.log('app folder not found, creating...');
 		const createResponse = await gapi.client.drive.files.create({
 			resource: {
-				name: 'fs-notes',
+				name: `${app_folder}`,
 				mimeType: FOLDER_MIME_TYPE,
 				parents: ['root']
 			},
@@ -54,14 +32,11 @@ export async function findOrCreateFsNotesFolder(): Promise<GoogleDriveFile> {
 
 		return createResponse.result as GoogleDriveFile;
 	} catch (error) {
-		console.error('Error finding or creating fs-notes folder:', error);
+		console.error('Error finding or creating app folder:', error);
 		throw error;
 	}
 }
 
-/**
- * List files in a folder
- */
 export async function listFiles(folderId: string): Promise<GoogleDriveFile[]> {
 	try {
 		const response = await gapi.client.drive.files.list({
@@ -77,9 +52,6 @@ export async function listFiles(folderId: string): Promise<GoogleDriveFile[]> {
 	}
 }
 
-/**
- * Build FileNode tree from Drive folder
- */
 export async function buildDriveFileTree(
 	folderId: string,
 	parentPath: string = ''
@@ -95,7 +67,6 @@ export async function buildDriveFileTree(
 			const isFolder = file.mimeType === FOLDER_MIME_TYPE;
 
 			if (isFolder) {
-				// Recursively get children for folders
 				const children = await buildDriveFileTree(file.id, path);
 
 				nodes.push({
@@ -139,9 +110,6 @@ export async function buildDriveFileTree(
 	});
 }
 
-/**
- * Read file content from Google Drive
- */
 export async function readDriveFile(fileId: string): Promise<string> {
 	try {
 		loadingState.start('file-load', fileId);
@@ -150,7 +118,6 @@ export async function readDriveFile(fileId: string): Promise<string> {
 			throw new Error('Not authenticated');
 		}
 
-		// Use fetch API to download file content
 		const response = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
 			headers: {
 				Authorization: `Bearer ${token}`
@@ -170,9 +137,6 @@ export async function readDriveFile(fileId: string): Promise<string> {
 	}
 }
 
-/**
- * Write/update file content in Google Drive
- */
 export async function writeDriveFile(fileId: string, content: string): Promise<void> {
 	try {
 		loadingState.start('file-save', fileId);
@@ -224,9 +188,6 @@ export async function writeDriveFile(fileId: string, content: string): Promise<v
 	}
 }
 
-/**
- * Helper function to find or create a folder by name in a parent folder
- */
 async function findOrCreateFolder(parentId: string, folderName: string): Promise<GoogleDriveFile> {
 	const response = await gapi.client.drive.files.list({
 		q: `name = '${folderName.replace(/'/g, "\\'")}' and mimeType = '${FOLDER_MIME_TYPE}' and trashed = false and '${parentId}' in parents`,
@@ -251,9 +212,6 @@ async function findOrCreateFolder(parentId: string, folderName: string): Promise
 	return createResponse.result as GoogleDriveFile;
 }
 
-/**
- * Helper function to navigate to or create a folder path
- */
 async function getOrCreateFolderByPath(parentId: string, path: string[]): Promise<string> {
 	let currentParentId = parentId;
 
@@ -265,10 +223,6 @@ async function getOrCreateFolderByPath(parentId: string, path: string[]): Promis
 	return currentParentId;
 }
 
-/**
- * Create a new file in Google Drive
- * Supports nested paths like "folder/subfolder/file.txt"
- */
 export async function createDriveFile(
 	parentId: string,
 	name: string,
@@ -340,10 +294,6 @@ export async function createDriveFile(
 	}
 }
 
-/**
- * Create a new folder in Google Drive
- * Supports nested paths like "folder/subfolder/newdir"
- */
 export async function createDriveFolder(parentId: string, name: string): Promise<GoogleDriveFile> {
 	try {
 		const parts = name.split('/').filter((p) => p.length > 0);
@@ -370,9 +320,6 @@ export async function createDriveFolder(parentId: string, name: string): Promise
 	}
 }
 
-/**
- * Delete a file or folder (move to trash)
- */
 export async function deleteDriveFile(fileId: string): Promise<void> {
 	try {
 		await gapi.client.drive.files.update({
@@ -387,9 +334,6 @@ export async function deleteDriveFile(fileId: string): Promise<void> {
 	}
 }
 
-/**
- * Search for files in Google Drive
- */
 export async function searchDriveFiles(query: string): Promise<GoogleDriveFile[]> {
 	try {
 		const response = await gapi.client.drive.files.list({
@@ -405,9 +349,6 @@ export async function searchDriveFiles(query: string): Promise<GoogleDriveFile[]
 	}
 }
 
-/**
- * Get a specific file by ID
- */
 export async function getDriveFile(fileId: string): Promise<GoogleDriveFile> {
 	try {
 		const response = await gapi.client.drive.files.get({

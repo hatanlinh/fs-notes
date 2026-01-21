@@ -6,7 +6,6 @@
 	let { children } = $props();
 
 	onMount(async () => {
-		// Initialize Google Auth when app loads
 		try {
 			await initGoogleAuth();
 			setupTokenRefresh();

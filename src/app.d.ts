@@ -9,7 +9,6 @@ declare global {
 		// interface Platform {}
 	}
 
-	// Environment variables
 	namespace NodeJS {
 		interface ProcessEnv {
 			PUBLIC_GOOGLE_CLIENT_ID: string;
@@ -17,7 +16,6 @@ declare global {
 		}
 	}
 
-	// Google API type declarations
 	const gapi: typeof import('gapi');
 	const google: {
 		accounts: {
@@ -38,7 +36,6 @@ declare global {
 		};
 	};
 
-	// File System Access API type declarations
 	interface Window {
 		showDirectoryPicker(options?: {
 			mode?: 'read' | 'readwrite';
