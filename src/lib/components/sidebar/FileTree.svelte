@@ -4,13 +4,13 @@
 </script>
 
 {#if $fileTree.length > 0}
-	<div class="flex-1 overflow-y-auto">
+	<div class="explorer-content">
 		{#each $fileTree as node (node.path)}
 			<FileTreeItem {node} />
 		{/each}
 	</div>
 {:else}
-	<div class="flex flex-1 items-center justify-center p-4 text-sm text-gray-500">
+	<div class="explorer-empty">
 		<p>No directory opened</p>
 	</div>
 {/if}

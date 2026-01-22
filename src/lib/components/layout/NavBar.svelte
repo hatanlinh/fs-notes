@@ -73,90 +73,62 @@
 	}
 </script>
 
-<nav
-	class="flex h-12 items-center justify-between border-b border-gray-200 bg-white px-4 dark:border-gray-700 dark:bg-gray-900"
->
-	<!-- Left side: Title -->
-	<div class="flex items-center">
+<nav class="navbar">
+	<div class="navbar-left">
 		<h1 class="text-lg font-semibold text-gray-900 dark:text-gray-100">fs-notes</h1>
 	</div>
 
-	<!-- Right side: Control buttons -->
-	<div class="flex items-center gap-2">
+	<div class="navbar-right">
 		<button
 			onclick={handleOpenDirectory}
-			class="group relative flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:text-gray-300 dark:hover:bg-gray-800"
+			class="group relative btn-ghost"
 			aria-label="Open local directory"
 			title="Open local directory"
 		>
 			<IconFolderOpen
 				size={20}
-				class={$storageType === 'local' && $directoryHandle
-					? 'text-blue-600 dark:text-blue-400'
-					: ''}
+				class={$storageType === 'local' && $directoryHandle ? 'navbar-icon-active' : ''}
 			/>
-
-			<!-- Tooltip -->
-			<span
-				class="pointer-events-none absolute right-0 bottom-full mb-2 rounded bg-gray-900 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-700"
-			>
-				Open local directory
-			</span>
+			<span class="tooltip">Open local directory</span>
 		</button>
 
 		<button
 			onclick={handleConnectGoogleDrive}
 			disabled={isConnectingDrive}
-			class="group relative flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-300 dark:hover:bg-gray-800"
+			class="group relative btn-ghost {isConnectingDrive ? 'btn-disabled' : ''}"
 			aria-label="Connect to Google Drive"
 			title="Connect to Google Drive"
 		>
 			<IconBrandGoogleDrive
 				size={20}
-				class={$isGoogleAuthenticated ? 'text-blue-600 dark:text-blue-400' : ''}
+				class={$isGoogleAuthenticated ? 'navbar-icon-active' : ''}
 			/>
-
-			<span
-				class="pointer-events-none absolute right-0 bottom-full mb-2 rounded bg-gray-900 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-700"
-			>
+			<span class="tooltip">
 				{$isGoogleAuthenticated ? 'Open Google Drive' : 'Connect to Google Drive'}
 			</span>
 		</button>
 
-		<!-- Disconnect Local Directory Button -->
 		{#if $storageType === 'local' && $directoryHandle}
 			<button
 				onclick={handleDisconnectLocal}
-				class="group relative flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-red-100 focus:ring-2 focus:ring-red-500 focus:outline-none dark:text-gray-300 dark:hover:bg-red-900/20"
+				class="group relative btn-ghost-danger"
 				aria-label="Close local directory"
 				title="Close local directory"
 			>
-				<IconX size={20} class="text-red-600 dark:text-red-400" />
-
-				<span
-					class="pointer-events-none absolute right-0 bottom-full mb-2 rounded bg-gray-900 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-700"
-				>
-					Close local directory
-				</span>
+				<IconX size={20} class="text-danger" />
+				<span class="tooltip">Close local directory</span>
 			</button>
 		{/if}
 
-		<!-- Disconnect Google Drive Button -->
 		{#if $isGoogleAuthenticated}
 			<button
 				onclick={handleDisconnectGoogleDrive}
-				class="group relative flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-red-100 focus:ring-2 focus:ring-red-500 focus:outline-none dark:text-gray-300 dark:hover:bg-red-900/20"
+				class="group relative btn-ghost-danger"
 				aria-label="Disconnect from Google Drive"
 				title="Disconnect from Google Drive"
 			>
-				<IconX size={20} class="text-red-600 dark:text-red-400" />
-
-				<!-- Tooltip -->
-				<span
-					class="pointer-events-none absolute right-0 bottom-full mb-2 rounded bg-gray-900 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity group-hover:opacity-100 dark:bg-gray-700"
-				>
-					Disconnect Google Drive
-				</span>
+				<IconX size={20} class="text-danger" />
+				<span class="tooltip">Disconnect Google Drive</span>
 			</button>
 		{/if}
 	</div>

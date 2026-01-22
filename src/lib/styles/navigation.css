@@ -1,0 +1,74 @@
+@layer components {
+	.navbar {
+		@apply flex h-12 items-center justify-between border-b px-4;
+		@apply bg-white border-gray-200;
+		@apply dark:border-gray-700 dark:bg-gray-900;
+	}
+
+	.navbar-left {
+		@apply flex items-center;
+	}
+
+	.navbar-right {
+		@apply flex items-center gap-2;
+	}
+
+	.navbar-icon-active {
+		@apply text-blue-600 dark:text-blue-400;
+	}
+
+	.tooltip {
+		@apply pointer-events-none absolute bottom-full right-0 mb-2 whitespace-nowrap rounded px-2 py-1 text-xs text-white;
+		@apply opacity-0 transition-opacity group-hover:opacity-100;
+		@apply bg-gray-900 dark:bg-gray-700;
+	}
+
+	.tabs-container {
+		@apply flex items-center gap-x-1 border-b bg-white px-1 py-1 pt-1;
+		@apply border-gray-200 dark:border-gray-700 dark:bg-gray-800;
+	}
+
+	.tab {
+		@apply flex min-w-50 items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors;
+	}
+
+	.tab-active {
+		@apply bg-gray-300 text-gray-600;
+		@apply dark:bg-gray-900 dark:text-gray-100;
+	}
+
+	.tab-inactive {
+		@apply bg-gray-100 text-gray-900 hover:bg-gray-200;
+		@apply dark:bg-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-200;
+	}
+
+	.tab-label {
+		@apply max-w-30 truncate;
+	}
+
+	.tab-label-unsaved {
+		@apply italic;
+	}
+
+	.tab-indicator {
+		@apply h-2 w-2 shrink-0 rounded-full bg-gray-400;
+		@apply dark:bg-gray-500;
+	}
+
+	.statusbar {
+		@apply flex h-6 items-center justify-between border-t bg-gray-50 px-4 text-xs text-gray-600;
+		@apply border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400;
+	}
+
+	.statusbar-left {
+		@apply flex items-center gap-4;
+	}
+
+	.statusbar-right {
+		@apply flex items-center gap-4;
+	}
+
+	.statusbar-status {
+		@apply text-gray-500 dark:text-gray-400;
+	}
+}

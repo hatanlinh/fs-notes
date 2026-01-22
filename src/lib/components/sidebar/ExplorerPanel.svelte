@@ -64,18 +64,15 @@
 	const hasDirectory = $derived($directoryHandle !== null || $driveRootFolderId !== null);
 </script>
 
-<aside class="flex w-64 flex-col p-2">
-	<div
-		class="flex h-full flex-col overflow-hidden rounded-md border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800"
-	>
-		<!-- Header with root folder name -->
-		<div class="flex h-10 items-center gap-2 border-b border-gray-200 px-4 dark:border-gray-700">
+<aside class="sidebar">
+	<div class="explorer-panel">
+		<div class="explorer-header">
 			{#if $storageType === 'local' && $directoryHandle}
 				<IconDeviceDesktop size={20} class="shrink-0 text-gray-600 dark:text-gray-400" />
 			{:else if $storageType === 'google-drive'}
 				<IconBrandGoogleDrive size={20} class="shrink-0 text-blue-600 dark:text-blue-400" />
 			{/if}
-			<h2 class="flex-1 text-sm font-semibold text-gray-700 dark:text-gray-300">
+			<h2 class="explorer-title flex-1">
 				{#if $storageType === 'local'}
 					{$directoryHandle?.name ?? 'Open a directory to view files'}
 				{:else if $storageType === 'google-drive'}
@@ -85,22 +82,24 @@
 				{/if}
 			</h2>
 			{#if hasDirectory}
-				<button
-					onclick={handleNewFile}
-					class="rounded p-1 text-gray-600 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700"
-					title="New File"
-					aria-label="New File"
-				>
-					<IconFilePlus size={18} />
-				</button>
-				<button
-					onclick={handleNewDirectory}
-					class="rounded p-1 text-gray-600 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700"
-					title="New Directory"
-					aria-label="New Directory"
-				>
-					<IconFolderPlus size={18} />
-				</button>
+				<div class="explorer-actions">
+					<button
+						onclick={handleNewFile}
+						class="btn-explorer-action"
+						title="New File"
+						aria-label="New File"
+					>
+						<IconFilePlus size={18} />
+					</button>
+					<button
+						onclick={handleNewDirectory}
+						class="btn-explorer-action"
+						title="New Directory"
+						aria-label="New Directory"
+					>
+						<IconFolderPlus size={18} />
+					</button>
+				</div>
 			{/if}
 		</div>
 

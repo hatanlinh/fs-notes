@@ -5,19 +5,13 @@
 	import EditorPanel from '$lib/components/editor/EditorPanel.svelte';
 </script>
 
-<div class="flex h-screen flex-col overflow-hidden bg-gray-100 dark:bg-gray-950">
-	<!-- Top Navigation -->
+<div class="app-layout">
 	<NavBar />
 
-	<!-- Main Content Area -->
-	<div class="flex flex-1 overflow-hidden">
-		<!-- Left Sidebar - File Explorer -->
+	<div class="app-main">
 		<ExplorerPanel />
-
-		<!-- Right Side - Editor -->
 		<EditorPanel />
 	</div>
 
-	<!-- Bottom Status Bar -->
 	<StatusBar />
 </div>

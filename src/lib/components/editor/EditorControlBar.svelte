@@ -42,10 +42,10 @@
 	});
 </script>
 
-<div class="flex items-center">
+<div class="editor-control-bar">
 	<button
 		onclick={onUndo}
-		class="flex items-center rounded-l-md border border-gray-200 bg-white px-3 py-2 text-gray-700 hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+		class="editor-control-btn-left"
 		title="Undo (Ctrl+Z)"
 		aria-label="Undo"
 	>
@@ -54,7 +54,7 @@
 
 	<button
 		onclick={onRedo}
-		class="flex items-center border border-l-0 border-gray-200 bg-white px-3 py-2 text-gray-700 hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+		class="editor-control-btn-middle"
 		title="Redo (Ctrl+Y)"
 		aria-label="Redo"
 	>
@@ -64,20 +64,20 @@
 	<button
 		onclick={onSave}
 		disabled={!isActiveTabDirty}
-		class="flex items-center border border-l-0 border-gray-200 bg-white px-3 py-2 text-gray-700 hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-75 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+		class="editor-control-btn-middle"
 		title="Save (Ctrl+S)"
 		aria-label="Save"
 	>
 		<IconDeviceFloppy
 			size={20}
-			class={isActiveTabDirty ? 'text-blue-600 dark:text-blue-400' : ''}
+			class={isActiveTabDirty ? 'editor-control-icon-active' : ''}
 		/>
 	</button>
 
 	<button
 		onclick={onSaveAll}
 		disabled={!hasDirtyTabs}
-		class="flex items-center rounded-r-md border border-l-0 border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-75 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+		class="editor-control-btn-right"
 		title="Save All (Ctrl+Shift+S)"
 		aria-label="Save All"
 	>
@@ -85,12 +85,12 @@
 	</button>
 
 	{#if isLoading}
-		<div class="ml-2 flex items-center">
-			<IconLoader size={20} class="animate-spin text-blue-600 dark:text-blue-400" />
+		<div class="editor-control-status">
+			<IconLoader size={20} class="editor-control-spinner" />
 		</div>
 	{:else if showSuccess}
-		<div class="ml-2 flex items-center">
-			<IconCheck size={20} class="text-blue-600 dark:text-blue-400" />
+		<div class="editor-control-status">
+			<IconCheck size={20} class="editor-control-success" />
 		</div>
 	{/if}
 </div>

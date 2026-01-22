@@ -1,0 +1,56 @@
+@layer components {
+	.editor-panel {
+		@apply flex h-full flex-col overflow-hidden rounded-md bg-white;
+		@apply dark:bg-gray-900;
+	}
+
+	.editor-control-bar_backup {
+		@apply flex items-center justify-between border-b bg-gray-50 px-4 py-2;
+		@apply border-gray-200 dark:border-gray-700 dark:bg-gray-800;
+	}
+	.editor-control-bar {
+		@apply flex items-center
+	}
+
+	.editor-control-btn-left {
+		@apply flex items-center rounded-l-md border border-gray-200 bg-white px-3 py-2 text-gray-700;
+		@apply hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50;
+		@apply dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700;
+	}
+
+	.editor-control-btn-middle {
+		@apply flex items-center border border-l-0 border-gray-200 bg-white px-3 py-2 text-gray-700;
+		@apply hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50;
+		@apply dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700;
+	}
+
+	.editor-control-btn-right {
+		@apply flex items-center rounded-r-md border border-l-0 border-gray-200 bg-white px-3 py-2 text-xs text-gray-700;
+		@apply hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50;
+		@apply dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700;
+	}
+
+	.editor-control-icon-active {
+		@apply text-blue-600 dark:text-blue-400;
+	}
+
+	.editor-control-status {
+		@apply ml-2 flex items-center;
+	}
+
+	.editor-control-spinner {
+		@apply animate-spin text-blue-600 dark:text-blue-400;
+	}
+
+	.editor-control-success {
+		@apply text-blue-600 dark:text-blue-400;
+	}
+
+	.editor-container {
+		@apply flex-1 overflow-auto;
+	}
+
+	.editor-empty {
+		@apply flex h-full items-center justify-center text-gray-400;
+	}
+}

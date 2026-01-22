@@ -38,15 +38,12 @@
 
 	async function handleClick() {
 		if (node.type === 'file') {
-			// Open file in editor
 			try {
 				let content: string;
 
 				if (node.storageType === 'google-drive' && node.driveId) {
-					// Read from Google Drive
 					content = await readDriveFile(node.driveId);
 				} else if (node.handle) {
-					// Read from local file system
 					const handle = node.handle as FileSystemFileHandle;
 					content = await readFile(handle);
 				} else {
@@ -59,7 +56,6 @@
 				alert(`Failed to open file: ${err instanceof Error ? err.message : 'Unknown error'}`);
 			}
 		} else {
-			// Toggle directory expansion
 			toggleExpand();
 		}
 	}
@@ -69,16 +65,10 @@
 	}
 </script>
 
-<div class="select-none">
-	<!-- Current Node -->
-	<button
-		onclick={handleClick}
-		class="flex w-full items-center gap-1 py-1 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
-		style={getIndentStyle(level)}
-	>
-		<!-- Chevron for directories -->
+<div class="tree-item-container">
+	<button onclick={handleClick} class="btn-tree-item" style={getIndentStyle(level)}>
 		{#if node.type === 'directory'}
-			<span class="shrink-0 text-gray-500">
+			<span class="tree-item-chevron">
 				{#if isExpanded}
 					<IconChevronDown size={16} />
 				{:else}
@@ -86,13 +76,12 @@
 				{/if}
 			</span>
 		{:else}
-			<span class="w-4"></span>
+			<span class="tree-item-chevron-spacer"></span>
 		{/if}
 
-		<!-- Icon -->
-		<span class="shrink-0 text-gray-600 dark:text-gray-400">
+		<span class="tree-item-icon">
 			{#if isLoading}
-				<IconLoader size={16} class="animate-spin text-blue-600 dark:text-blue-400" />
+				<IconLoader size={16} class="tree-item-icon-loading" />
 			{:else if node.type === 'directory'}
 				{#if isExpanded}
 					<IconFolderOpen size={16} />
@@ -104,11 +93,9 @@
 			{/if}
 		</span>
 
-		<!-- Name -->
-		<span class="truncate text-gray-800 dark:text-gray-200">{node.name}</span>
+		<span class="tree-item-name">{node.name}</span>
 	</button>
 
-	<!-- Children (if directory is expanded) -->
 	{#if node.type === 'directory' && isExpanded && node.children}
 		{#each node.children as child (child.path)}
 			<FileTreeItem node={child} level={level + 1} />

@@ -1,0 +1,65 @@
+@layer components {
+	.btn-primary {
+		@apply flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors;
+		@apply bg-blue-600 text-white hover:bg-blue-700;
+		@apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+	}
+
+	.btn-secondary {
+		@apply flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors;
+		@apply border border-gray-300 text-gray-700 hover:bg-gray-50;
+		@apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+		@apply dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700;
+	}
+
+	.btn-danger {
+		@apply flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors;
+		@apply bg-red-600 text-white hover:bg-red-700;
+		@apply focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2;
+	}
+
+	.btn-ghost {
+		@apply flex items-center justify-center rounded-md p-2 text-gray-700 transition-colors;
+		@apply hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500;
+		@apply dark:text-gray-300 dark:hover:bg-gray-800;
+	}
+
+	.btn-ghost-danger {
+		@apply flex items-center justify-center rounded-md p-2 text-gray-700 transition-colors;
+		@apply hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500;
+		@apply dark:text-gray-300 dark:hover:bg-red-900/20;
+	}
+
+	.btn-icon-close {
+		@apply shrink-0 rounded p-0.5 hover:bg-gray-300;
+		@apply dark:hover:bg-gray-600;
+	}
+
+	.btn-dialog-close {
+		@apply rounded p-1 text-gray-500 hover:bg-gray-100;
+		@apply dark:hover:bg-gray-700;
+	}
+
+	.btn-explorer-action {
+		@apply rounded p-1 text-gray-500 hover:bg-gray-100;
+		@apply dark:hover:bg-gray-700;
+	}
+
+	.btn-tab-new {
+		@apply flex items-center gap-1 rounded-md bg-gray-100 px-2 py-1.5 text-sm text-gray-600 transition-colors;
+		@apply hover:bg-gray-200 dark:bg-gray-600 dark:text-gray-300 dark:hover:bg-gray-700;
+	}
+
+	.btn-tab-select {
+		@apply flex min-w-0 flex-1 items-center gap-2;
+	}
+
+	.btn-tree-item {
+		@apply flex w-full items-center gap-1 py-1 text-left text-sm;
+		@apply hover:bg-gray-100 dark:hover:bg-gray-700;
+	}
+
+	.btn-disabled {
+		@apply cursor-not-allowed opacity-50;
+	}
+}

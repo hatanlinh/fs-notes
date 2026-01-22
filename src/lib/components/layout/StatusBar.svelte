@@ -2,23 +2,21 @@
 	import { activeTab } from '$lib/stores/tabs';
 </script>
 
-<div
-	class="flex h-6 items-center justify-between border-t border-gray-200 bg-gray-50 px-4 text-xs text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
->
-	<div class="flex items-center gap-4">
+<div class="statusbar">
+	<div class="statusbar-left">
 		{#if $activeTab}
 			<span class="font-medium"
 				>{$activeTab.file ? $activeTab.file.name : $activeTab.defaultFileName || 'Untitled'}</span
 			>
 			{#if $activeTab.isDirty || $activeTab.isUnsaved}
-				<span class="text-gray-500 dark:text-gray-400">● Modified</span>
+				<span class="statusbar-status">● Modified</span>
 			{/if}
 		{:else}
 			<span class="text-gray-400">No file open</span>
 		{/if}
 	</div>
 
-	<div class="flex items-center gap-4">
+	<div class="statusbar-right">
 		{#if $activeTab?.cursorPosition}
 			<span>Ln {$activeTab.cursorPosition.line}, Col {$activeTab.cursorPosition.column}</span>
 		{/if}

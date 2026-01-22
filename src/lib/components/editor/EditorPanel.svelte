@@ -199,9 +199,8 @@
 	// });
 </script>
 
-<main class="flex flex-1 flex-col overflow-hidden py-2 pr-2">
-	<div class="flex pb-1">
-		<!-- Control Bar -->
+<main class="main-content">
+	<div class="panel-header">
 		<EditorControlBar
 			onUndo={handleUndo}
 			onRedo={handleRedo}
@@ -210,12 +209,10 @@
 		/>
 	</div>
 
-	<div class="flex h-full flex-col overflow-hidden rounded-md bg-white dark:bg-gray-900">
-		<!-- Tab Bar -->
+	<div class="editor-panel">
 		<EditorTabs />
 
-		<!-- Editor Area -->
-		<div class="flex-1 overflow-hidden">
+		<div class="editor-container">
 			{#if $activeTab}
 				{#key $activeTab.id}
 					<TextEditor
@@ -226,7 +223,7 @@
 					/>
 				{/key}
 			{:else}
-				<div class="flex h-full items-center justify-center text-gray-500">
+				<div class="editor-empty">
 					<div class="text-center">
 						<p class="text-lg">No file open</p>
 						<p class="mt-2 text-sm">Open a file from the explorer to start editing</p>
@@ -236,7 +233,6 @@
 		</div>
 	</div>
 
-	<!-- Save Dialog for unsaved tabs -->
 	<SaveDialog
 		bind:isOpen={showSaveDialog}
 		onClose={handleCloseSaveDialog}
