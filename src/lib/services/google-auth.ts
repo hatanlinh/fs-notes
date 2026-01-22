@@ -55,7 +55,9 @@ function initGis(): Promise<void> {
 					}
 
 					if (response.access_token) {
-						saveToken(response.access_token, response.expires_in || 3600);
+						const parsed = Number.parseInt(response.expires_in);
+						const expires_in = Number.isFinite(parsed) ? parsed : 3600;
+						saveToken(response.access_token, expires_in);
 						isGoogleAuthenticated.set(true);
 					}
 				}
