@@ -1,7 +1,7 @@
 @layer components {
 	.explorer-panel {
-		@apply flex h-full flex-col overflow-hidden rounded-md border bg-gray-50;
-		@apply border-gray-200 dark:border-gray-700 dark:bg-gray-800;
+		@apply flex h-full flex-col overflow-hidden rounded-md border;
+		@apply border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800;
 	}
 
 	.explorer-header {
@@ -10,8 +10,8 @@
 	}
 
 	.explorer-title {
-		@apply text-sm font-semibold text-gray-700;
-		@apply dark:text-gray-300;
+		@apply text-sm font-semibold;
+		@apply text-gray-700 dark:text-gray-300;
 	}
 
 	.explorer-actions {
@@ -23,8 +23,8 @@
 	}
 
 	.explorer-empty {
-		@apply flex flex-1 items-center justify-center p-4 text-sm text-gray-500;
-		@apply dark:text-gray-400;
+		@apply flex flex-1 items-center justify-center p-4 text-sm;
+		@apply text-gray-500 dark:text-gray-400;
 	}
 
 	.file-tree {
@@ -44,17 +44,17 @@
 	}
 
 	.tree-item-icon {
-		@apply shrink-0 text-gray-600;
-		@apply dark:text-gray-400;
+		@apply shrink-0;
+		@apply text-gray-600 dark:text-gray-400;
 	}
 
 	.tree-item-icon-loading {
-		@apply animate-spin text-blue-600;
-		@apply dark:text-blue-400;
+		@apply animate-spin;
+		@apply text-blue-600 dark:text-blue-400;
 	}
 
 	.tree-item-name {
-		@apply truncate text-gray-800;
-		@apply dark:text-gray-200;
+		@apply truncate;
+		@apply text-gray-800 dark:text-gray-200;
 	}
 }

@@ -1,32 +1,35 @@
 @layer components {
 	.editor-panel {
-		@apply flex h-full flex-col overflow-hidden rounded-md bg-white;
-		@apply dark:bg-gray-900;
+		@apply flex h-full flex-col overflow-hidden rounded-md;
+		@apply bg-white dark:bg-gray-900;
 	}
 
 	.editor-control-bar_backup {
-		@apply flex items-center justify-between border-b bg-gray-50 px-4 py-2;
-		@apply border-gray-200 dark:border-gray-700 dark:bg-gray-800;
+		@apply flex items-center justify-between border-b px-4 py-2;
+		@apply border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800;
 	}
 	.editor-control-bar {
-		@apply flex items-center
+		@apply flex items-center;
 	}
 
 	.editor-control-btn-left {
-		@apply flex items-center rounded-l-md border border-gray-200 bg-white px-3 py-2 text-gray-700;
-		@apply hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50;
+		@apply flex items-center rounded-l-md border px-3 py-2;
+		@apply disabled:cursor-not-allowed disabled:opacity-50;
+		@apply border-gray-200 bg-white text-gray-700 hover:bg-gray-200;
 		@apply dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700;
 	}
 
 	.editor-control-btn-middle {
-		@apply flex items-center border border-l-0 border-gray-200 bg-white px-3 py-2 text-gray-700;
-		@apply hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50;
+		@apply flex items-center border border-l-0 px-3 py-2;
+		@apply disabled:cursor-not-allowed disabled:opacity-50;
+		@apply border-gray-200 bg-white text-gray-700 hover:bg-gray-200;
 		@apply dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700;
 	}
 
 	.editor-control-btn-right {
-		@apply flex items-center rounded-r-md border border-l-0 border-gray-200 bg-white px-3 py-2 text-xs text-gray-700;
-		@apply hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50;
+		@apply flex items-center rounded-r-md border border-l-0 px-3 py-2 text-xs;
+		@apply disabled:cursor-not-allowed disabled:opacity-50;
+		@apply border-gray-200 bg-white text-gray-700 hover:bg-gray-200;
 		@apply dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700;
 	}
 

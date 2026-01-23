@@ -1,7 +1,7 @@
 @layer components {
 	.navbar {
 		@apply flex h-12 items-center justify-between border-b px-4;
-		@apply bg-white border-gray-200;
+		@apply border-gray-200 bg-white;
 		@apply dark:border-gray-700 dark:bg-gray-900;
 	}
 
@@ -18,14 +18,14 @@
 	}
 
 	.tooltip {
-		@apply pointer-events-none absolute bottom-full right-0 mb-2 whitespace-nowrap rounded px-2 py-1 text-xs text-white;
+		@apply pointer-events-none absolute right-0 bottom-full mb-2 rounded px-2 py-1 text-xs whitespace-nowrap;
 		@apply opacity-0 transition-opacity group-hover:opacity-100;
-		@apply bg-gray-900 dark:bg-gray-700;
+		@apply bg-gray-900 text-white dark:bg-gray-700;
 	}
 
 	.tabs-container {
-		@apply flex items-center gap-x-1 border-b bg-white px-1 py-1 pt-1;
-		@apply border-gray-200 dark:border-gray-700 dark:bg-gray-800;
+		@apply flex items-center gap-x-1 border-b px-1 py-1 pt-1;
+		@apply border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800;
 	}
 
 	.tab {
@@ -51,13 +51,14 @@
 	}
 
 	.tab-indicator {
-		@apply h-2 w-2 shrink-0 rounded-full bg-gray-400;
-		@apply dark:bg-gray-500;
+		@apply h-2 w-2 shrink-0 rounded-full;
+		@apply bg-gray-400 dark:bg-gray-500;
 	}
 
 	.statusbar {
-		@apply flex h-6 items-center justify-between border-t bg-gray-50 px-4 text-xs text-gray-600;
-		@apply border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400;
+		@apply flex h-6 items-center justify-between border-t px-4 text-xs;
+		@apply border-gray-200 bg-gray-50 text-gray-600;
+		@apply dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400;
 	}
 
 	.statusbar-left {

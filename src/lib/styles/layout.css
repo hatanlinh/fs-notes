@@ -1,8 +1,7 @@
 @layer components {
 	.app-layout {
 		@apply flex h-screen flex-col overflow-hidden;
-		@apply bg-gray-100;
-		@apply dark:bg-gray-950;
+		@apply bg-gray-100 dark:bg-gray-950;
 	}
 
 	.app-main {
