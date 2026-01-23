@@ -7,6 +7,12 @@ let tokenClient: google.accounts.oauth2.TokenClient | null = null;
 let gapiInited = false;
 let gisInited = false;
 
+// Pending promise for sign-in requests
+let pendingSignIn: {
+	resolve: () => void;
+	reject: (error: Error) => void;
+} | null = null;
+
 async function initGapi(): Promise<void> {
 	if (gapiInited) return;
 
@@ -51,6 +57,11 @@ function initGis(): Promise<void> {
 					if (response.error) {
 						console.error('OAuth error:', response);
 						isGoogleAuthenticated.set(false);
+
+						if (pendingSignIn) {
+							pendingSignIn.reject(new Error(response.error));
+							pendingSignIn = null;
+						}
 						return;
 					}
 
@@ -59,6 +70,14 @@ function initGis(): Promise<void> {
 						const expires_in = Number.isFinite(parsed) ? parsed : 3600;
 						saveToken(response.access_token, expires_in);
 						isGoogleAuthenticated.set(true);
+
+						if (pendingSignIn) {
+							pendingSignIn.resolve();
+							pendingSignIn = null;
+						}
+					} else if (pendingSignIn) {
+						pendingSignIn.reject(new Error('No access token received'));
+						pendingSignIn = null;
 					}
 				}
 			});
@@ -91,23 +110,8 @@ export async function signInWithGoogle(): Promise<void> {
 	}
 
 	return new Promise((resolve, reject) => {
-		const originalCallback = tokenClient.callback;
-
-		tokenClient.callback = (response: google.accounts.oauth2.TokenResponse) => {
-			originalCallback(response);
-
-			if (response.error) {
-				reject(new Error(response.error));
-			} else if (response.access_token) {
-				resolve();
-			} else {
-				reject(new Error('No access token received'));
-			}
-
-			tokenClient.callback = originalCallback;
-		};
-
-		tokenClient.requestAccessToken({ prompt: 'consent' });
+		pendingSignIn = { resolve, reject };
+		tokenClient!.requestAccessToken({ prompt: 'consent' });
 	});
 }
 
