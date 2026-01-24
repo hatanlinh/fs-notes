@@ -34,7 +34,7 @@
 
 		// Basic validation for invalid characters
 		// eslint-disable-next-line no-control-regex
-		if (/[<>:"/\\|?*\x00-\x1F]/g.test(inputValue)) {
+		if (/[<>:"\\|?*\x00-\x1F]/g.test(inputValue)) {
 			error = 'File name contains invalid characters';
 			return;
 		}
