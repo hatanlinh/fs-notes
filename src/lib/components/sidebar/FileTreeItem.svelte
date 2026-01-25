@@ -76,7 +76,7 @@
 				{/if}
 			</span>
 		{:else}
-			<span class="tree-item-chevron-spacer"></span>
+			<span class="w-4"></span>
 		{/if}
 
 		<span class="tree-item-icon">
