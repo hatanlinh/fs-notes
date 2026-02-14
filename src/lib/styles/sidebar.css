@@ -1,56 +1,56 @@
 @layer components {
-	.explorer-panel {
-		@apply flex h-full flex-col overflow-hidden rounded-md border;
-		@apply border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800;
-	}
+  .explorer-panel {
+    @apply flex h-full flex-col overflow-hidden rounded-md border;
+    @apply border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800;
+  }
 
-	.explorer-header {
-		@apply flex h-10 items-center gap-2 border-b px-4;
-		@apply border-gray-200 dark:border-gray-700;
-	}
+  .explorer-header {
+    @apply flex h-10 items-center gap-2 border-b px-4;
+    @apply border-gray-200 dark:border-gray-700;
+  }
 
-	.explorer-title {
-		@apply text-sm font-semibold;
-		@apply text-gray-700 dark:text-gray-300;
-	}
+  .explorer-title {
+    @apply text-sm font-semibold;
+    @apply text-gray-700 dark:text-gray-300;
+  }
 
-	.explorer-actions {
-		@apply flex items-center gap-1;
-	}
+  .explorer-actions {
+    @apply flex items-center gap-1;
+  }
 
-	.explorer-content {
-		@apply flex-1 overflow-y-auto;
-	}
+  .explorer-content {
+    @apply flex-1 overflow-y-auto;
+  }
 
-	.explorer-empty {
-		@apply flex flex-1 items-center justify-center p-4 text-sm;
-		@apply text-gray-500 dark:text-gray-400;
-	}
+  .explorer-empty {
+    @apply flex flex-1 items-center justify-center p-4 text-sm;
+    @apply text-gray-500 dark:text-gray-400;
+  }
 
-	.file-tree {
-		@apply select-none;
-	}
+  .file-tree {
+    @apply select-none;
+  }
 
-	.tree-item-container {
-		@apply select-none;
-	}
+  .tree-item-container {
+    @apply select-none;
+  }
 
-	.tree-item-chevron {
-		@apply shrink-0 text-gray-500;
-	}
+  .tree-item-chevron {
+    @apply shrink-0 text-gray-500;
+  }
 
-	.tree-item-icon {
-		@apply shrink-0;
-		@apply text-gray-600 dark:text-gray-400;
-	}
+  .tree-item-icon {
+    @apply shrink-0;
+    @apply text-gray-600 dark:text-gray-400;
+  }
 
-	.tree-item-icon-loading {
-		@apply animate-spin;
-		@apply text-blue-600 dark:text-blue-400;
-	}
+  .tree-item-icon-loading {
+    @apply animate-spin;
+    @apply text-blue-600 dark:text-blue-400;
+  }
 
-	.tree-item-name {
-		@apply truncate;
-		@apply text-gray-800 dark:text-gray-200;
-	}
+  .tree-item-name {
+    @apply truncate;
+    @apply text-gray-800 dark:text-gray-200;
+  }
 }

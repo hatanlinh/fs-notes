@@ -1,8 +1,8 @@
 export type {
-	FileType,
-	FileNode,
-	TabInfo,
-	EditorState,
-	StorageType,
-	GoogleDriveFile
-} from './file';
+  FileType,
+  FileNode,
+  TabInfo,
+  EditorState,
+  StorageType,
+  GoogleDriveFile,
+} from "./file";

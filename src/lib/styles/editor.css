@@ -1,55 +1,55 @@
 @layer components {
-	.editor-panel {
-		@apply flex h-full flex-col overflow-hidden rounded-md;
-		@apply bg-white dark:bg-gray-900;
-	}
+  .editor-panel {
+    @apply flex h-full flex-col overflow-hidden rounded-md;
+    @apply bg-white dark:bg-gray-900;
+  }
 
-	.editor-control-bar {
-		@apply flex items-center;
-	}
+  .editor-control-bar {
+    @apply flex items-center;
+  }
 
-	.editor-control-btn-left {
-		@apply flex items-center rounded-l-md border px-3 py-2;
-		@apply disabled:cursor-not-allowed disabled:opacity-50;
-		@apply border-gray-200 bg-white text-gray-700 hover:bg-gray-200;
-		@apply dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700;
-	}
+  .editor-control-btn-left {
+    @apply flex items-center rounded-l-md border px-3 py-2;
+    @apply disabled:cursor-not-allowed disabled:opacity-50;
+    @apply border-gray-200 bg-white text-gray-700 hover:bg-gray-200;
+    @apply dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700;
+  }
 
-	.editor-control-btn-middle {
-		@apply flex items-center border border-l-0 px-3 py-2;
-		@apply disabled:cursor-not-allowed disabled:opacity-50;
-		@apply border-gray-200 bg-white text-gray-700 hover:bg-gray-200;
-		@apply dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700;
-	}
+  .editor-control-btn-middle {
+    @apply flex items-center border border-l-0 px-3 py-2;
+    @apply disabled:cursor-not-allowed disabled:opacity-50;
+    @apply border-gray-200 bg-white text-gray-700 hover:bg-gray-200;
+    @apply dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700;
+  }
 
-	.editor-control-btn-right {
-		@apply flex items-center rounded-r-md border border-l-0 px-3 py-2 text-xs;
-		@apply disabled:cursor-not-allowed disabled:opacity-50;
-		@apply border-gray-200 bg-white text-gray-700 hover:bg-gray-200;
-		@apply dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700;
-	}
+  .editor-control-btn-right {
+    @apply flex items-center rounded-r-md border border-l-0 px-3 py-2 text-xs;
+    @apply disabled:cursor-not-allowed disabled:opacity-50;
+    @apply border-gray-200 bg-white text-gray-700 hover:bg-gray-200;
+    @apply dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700;
+  }
 
-	.editor-control-icon-active {
-		@apply text-blue-600 dark:text-blue-400;
-	}
+  .editor-control-icon-active {
+    @apply text-blue-600 dark:text-blue-400;
+  }
 
-	.editor-control-status {
-		@apply ml-2 flex items-center;
-	}
+  .editor-control-status {
+    @apply ml-2 flex items-center;
+  }
 
-	.editor-control-spinner {
-		@apply animate-spin text-blue-600 dark:text-blue-400;
-	}
+  .editor-control-spinner {
+    @apply animate-spin text-blue-600 dark:text-blue-400;
+  }
 
-	.editor-control-success {
-		@apply text-blue-600 dark:text-blue-400;
-	}
+  .editor-control-success {
+    @apply text-blue-600 dark:text-blue-400;
+  }
 
-	.editor-container {
-		@apply flex-1 overflow-auto;
-	}
+  .editor-container {
+    @apply flex-1 overflow-auto;
+  }
 
-	.editor-empty {
-		@apply flex h-full items-center justify-center text-gray-400;
-	}
+  .editor-empty {
+    @apply flex h-full items-center justify-center text-gray-400;
+  }
 }

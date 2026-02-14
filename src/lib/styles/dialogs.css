@@ -1,41 +1,41 @@
 @layer components {
-	.dialog-backdrop {
-		@apply fixed inset-0 z-50 flex items-center justify-center bg-black/50;
-	}
+  .dialog-backdrop {
+    @apply fixed inset-0 z-50 flex items-center justify-center bg-black/50;
+  }
 
-	.dialog-container {
-		@apply w-full max-w-md rounded-lg p-6 shadow-xl;
-		@apply bg-white dark:bg-gray-800;
-	}
+  .dialog-container {
+    @apply w-full max-w-md rounded-lg p-6 shadow-xl;
+    @apply bg-white dark:bg-gray-800;
+  }
 
-	.dialog-container-small {
-		@apply w-96 rounded-lg p-6 shadow-xl;
-		@apply bg-white dark:bg-gray-800;
-	}
+  .dialog-container-small {
+    @apply w-96 rounded-lg p-6 shadow-xl;
+    @apply bg-white dark:bg-gray-800;
+  }
 
-	.dialog-header {
-		@apply mb-4 flex items-center justify-between;
-	}
+  .dialog-header {
+    @apply mb-4 flex items-center justify-between;
+  }
 
-	.dialog-title {
-		@apply text-xl font-semibold;
-		@apply text-gray-900 dark:text-gray-100;
-	}
+  .dialog-title {
+    @apply text-xl font-semibold;
+    @apply text-gray-900 dark:text-gray-100;
+  }
 
-	.dialog-title-small {
-		@apply text-lg font-semibold;
-		@apply text-gray-900 dark:text-gray-100;
-	}
+  .dialog-title-small {
+    @apply text-lg font-semibold;
+    @apply text-gray-900 dark:text-gray-100;
+  }
 
-	.dialog-content {
-		@apply mb-4;
-	}
+  .dialog-content {
+    @apply mb-4;
+  }
 
-	.dialog-footer {
-		@apply flex justify-end gap-2;
-	}
+  .dialog-footer {
+    @apply flex justify-end gap-2;
+  }
 
-	.dialog-footer-buttons {
-		@apply flex justify-end gap-2;
-	}
+  .dialog-footer-buttons {
+    @apply flex justify-end gap-2;
+  }
 }

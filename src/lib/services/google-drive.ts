@@ -1,364 +1,381 @@
-import type { FileNode, GoogleDriveFile } from '$lib/types';
-import { getAccessToken } from './google-auth';
-import { loadingState } from '$lib/stores/loading';
+import type { FileNode, GoogleDriveFile } from "$lib/types";
+import { getAccessToken } from "./google-auth";
+import { loadingState } from "$lib/stores/loading";
 
-const FOLDER_MIME_TYPE = 'application/vnd.google-apps.folder';
-const TEXT_MIME_TYPE = 'text/plain';
+const FOLDER_MIME_TYPE = "application/vnd.google-apps.folder";
+const TEXT_MIME_TYPE = "text/plain";
 
 export async function findOrCreateAppFolder(): Promise<GoogleDriveFile> {
-	try {
-		const app_folder = 'fs-notes';
-		const response = await gapi.client.drive.files.list({
-			q: `name = '${app_folder}' and mimeType = 'application/vnd.google-apps.folder' and trashed = false and 'root' in parents`,
-			fields: 'files(id, name, mimeType, parents)',
-			pageSize: 1
-		});
+  try {
+    const app_folder = "fs-notes";
+    const response = await gapi.client.drive.files.list({
+      q: `name = '${app_folder}' and mimeType = 'application/vnd.google-apps.folder' and trashed = false and 'root' in parents`,
+      fields: "files(id, name, mimeType, parents)",
+      pageSize: 1,
+    });
 
-		const files = response.result.files || [];
+    const files = response.result.files || [];
 
-		if (files.length > 0) {
-			return files[0] as GoogleDriveFile;
-		}
+    if (files.length > 0) {
+      return files[0] as GoogleDriveFile;
+    }
 
-		console.log('app folder not found, creating...');
-		const createResponse = await gapi.client.drive.files.create({
-			resource: {
-				name: `${app_folder}`,
-				mimeType: FOLDER_MIME_TYPE,
-				parents: ['root']
-			},
-			fields: 'id, name, mimeType, parents'
-		});
+    console.log("app folder not found, creating...");
+    const createResponse = await gapi.client.drive.files.create({
+      resource: {
+        name: `${app_folder}`,
+        mimeType: FOLDER_MIME_TYPE,
+        parents: ["root"],
+      },
+      fields: "id, name, mimeType, parents",
+    });
 
-		return createResponse.result as GoogleDriveFile;
-	} catch (error) {
-		console.error('Error finding or creating app folder:', error);
-		throw error;
-	}
+    return createResponse.result as GoogleDriveFile;
+  } catch (error) {
+    console.error("Error finding or creating app folder:", error);
+    throw error;
+  }
 }
 
 export async function listFiles(folderId: string): Promise<GoogleDriveFile[]> {
-	try {
-		const response = await gapi.client.drive.files.list({
-			q: `'${folderId}' in parents and trashed = false`,
-			fields: 'files(id, name, mimeType, parents)',
-			orderBy: 'folder,name'
-		});
+  try {
+    const response = await gapi.client.drive.files.list({
+      q: `'${folderId}' in parents and trashed = false`,
+      fields: "files(id, name, mimeType, parents)",
+      orderBy: "folder,name",
+    });
 
-		return (response.result.files || []) as GoogleDriveFile[];
-	} catch (error) {
-		console.error('Error listing files:', error);
-		throw error;
-	}
+    return (response.result.files || []) as GoogleDriveFile[];
+  } catch (error) {
+    console.error("Error listing files:", error);
+    throw error;
+  }
 }
 
 export async function buildDriveFileTree(
-	folderId: string,
-	parentPath: string = ''
+  folderId: string,
+  parentPath: string = "",
 ): Promise<FileNode[]> {
-	const nodes: FileNode[] = [];
+  const nodes: FileNode[] = [];
 
-	try {
-		loadingState.start('file-tree-load', folderId);
-		const files = await listFiles(folderId);
+  try {
+    loadingState.start("file-tree-load", folderId);
+    const files = await listFiles(folderId);
 
-		for (const file of files) {
-			const path = parentPath ? `${parentPath}/${file.name}` : file.name;
-			const isFolder = file.mimeType === FOLDER_MIME_TYPE;
+    for (const file of files) {
+      const path = parentPath ? `${parentPath}/${file.name}` : file.name;
+      const isFolder = file.mimeType === FOLDER_MIME_TYPE;
 
-			if (isFolder) {
-				const children = await buildDriveFileTree(file.id, path);
+      if (isFolder) {
+        const children = await buildDriveFileTree(file.id, path);
 
-				nodes.push({
-					name: file.name,
-					path,
-					type: 'directory',
-					storageType: 'google-drive',
-					driveId: file.id,
-					mimeType: file.mimeType,
-					children: children.sort((a, b) => {
-						// Directories first, then alphabetical
-						if (a.type !== b.type) {
-							return a.type === 'directory' ? -1 : 1;
-						}
-						return a.name.localeCompare(b.name);
-					})
-				});
-			} else {
-				nodes.push({
-					name: file.name,
-					path,
-					type: 'file',
-					storageType: 'google-drive',
-					driveId: file.id,
-					mimeType: file.mimeType
-				});
-			}
-		}
-	} catch (error) {
-		console.error('Error building Drive file tree:', error);
-	} finally {
-		loadingState.end('file-tree-load', folderId);
-	}
+        nodes.push({
+          name: file.name,
+          path,
+          type: "directory",
+          storageType: "google-drive",
+          driveId: file.id,
+          mimeType: file.mimeType,
+          children: children.sort((a, b) => {
+            // Directories first, then alphabetical
+            if (a.type !== b.type) {
+              return a.type === "directory" ? -1 : 1;
+            }
+            return a.name.localeCompare(b.name);
+          }),
+        });
+      } else {
+        nodes.push({
+          name: file.name,
+          path,
+          type: "file",
+          storageType: "google-drive",
+          driveId: file.id,
+          mimeType: file.mimeType,
+        });
+      }
+    }
+  } catch (error) {
+    console.error("Error building Drive file tree:", error);
+  } finally {
+    loadingState.end("file-tree-load", folderId);
+  }
 
-	return nodes.sort((a, b) => {
-		// Directories first, then alphabetical
-		if (a.type !== b.type) {
-			return a.type === 'directory' ? -1 : 1;
-		}
-		return a.name.localeCompare(b.name);
-	});
+  return nodes.sort((a, b) => {
+    // Directories first, then alphabetical
+    if (a.type !== b.type) {
+      return a.type === "directory" ? -1 : 1;
+    }
+    return a.name.localeCompare(b.name);
+  });
 }
 
 export async function readDriveFile(fileId: string): Promise<string> {
-	try {
-		loadingState.start('file-load', fileId);
-		const token = getAccessToken();
-		if (!token) {
-			throw new Error('Not authenticated');
-		}
+  try {
+    loadingState.start("file-load", fileId);
+    const token = getAccessToken();
+    if (!token) {
+      throw new Error("Not authenticated");
+    }
 
-		const response = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
-			headers: {
-				Authorization: `Bearer ${token}`
-			}
-		});
+    const response = await fetch(
+      `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
 
-		if (!response.ok) {
-			throw new Error(`Failed to read file: ${response.statusText}`);
-		}
+    if (!response.ok) {
+      throw new Error(`Failed to read file: ${response.statusText}`);
+    }
 
-		return await response.text();
-	} catch (error) {
-		console.error('Error reading Drive file:', error);
-		throw error;
-	} finally {
-		loadingState.end('file-load', fileId);
-	}
+    return await response.text();
+  } catch (error) {
+    console.error("Error reading Drive file:", error);
+    throw error;
+  } finally {
+    loadingState.end("file-load", fileId);
+  }
 }
 
-export async function writeDriveFile(fileId: string, content: string): Promise<void> {
-	try {
-		loadingState.start('file-save', fileId);
-		const token = getAccessToken();
-		if (!token) {
-			throw new Error('Not authenticated');
-		}
+export async function writeDriveFile(
+  fileId: string,
+  content: string,
+): Promise<void> {
+  try {
+    loadingState.start("file-save", fileId);
+    const token = getAccessToken();
+    if (!token) {
+      throw new Error("Not authenticated");
+    }
 
-		// Create a multipart request body
-		const boundary = '-------314159265358979323846';
-		const delimiter = '\r\n--' + boundary + '\r\n';
-		const close_delim = '\r\n--' + boundary + '--';
+    // Create a multipart request body
+    const boundary = "-------314159265358979323846";
+    const delimiter = "\r\n--" + boundary + "\r\n";
+    const close_delim = "\r\n--" + boundary + "--";
 
-		const metadata = {
-			mimeType: TEXT_MIME_TYPE
-		};
+    const metadata = {
+      mimeType: TEXT_MIME_TYPE,
+    };
 
-		const multipartRequestBody =
-			delimiter +
-			'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
-			JSON.stringify(metadata) +
-			delimiter +
-			'Content-Type: ' +
-			TEXT_MIME_TYPE +
-			'\r\n\r\n' +
-			content +
-			close_delim;
+    const multipartRequestBody =
+      delimiter +
+      "Content-Type: application/json; charset=UTF-8\r\n\r\n" +
+      JSON.stringify(metadata) +
+      delimiter +
+      "Content-Type: " +
+      TEXT_MIME_TYPE +
+      "\r\n\r\n" +
+      content +
+      close_delim;
 
-		const response = await fetch(
-			`https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=multipart`,
-			{
-				method: 'PATCH',
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'Content-Type': 'multipart/related; boundary="' + boundary + '"'
-				},
-				body: multipartRequestBody
-			}
-		);
+    const response = await fetch(
+      `https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=multipart`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": 'multipart/related; boundary="' + boundary + '"',
+        },
+        body: multipartRequestBody,
+      },
+    );
 
-		if (!response.ok) {
-			throw new Error(`Failed to write file: ${response.statusText}`);
-		}
-	} catch (error) {
-		console.error('Error writing Drive file:', error);
-		throw error;
-	} finally {
-		loadingState.end('file-save', fileId);
-	}
+    if (!response.ok) {
+      throw new Error(`Failed to write file: ${response.statusText}`);
+    }
+  } catch (error) {
+    console.error("Error writing Drive file:", error);
+    throw error;
+  } finally {
+    loadingState.end("file-save", fileId);
+  }
 }
 
-async function findOrCreateFolder(parentId: string, folderName: string): Promise<GoogleDriveFile> {
-	const response = await gapi.client.drive.files.list({
-		q: `name = '${folderName.replace(/'/g, "\\'")}' and mimeType = '${FOLDER_MIME_TYPE}' and trashed = false and '${parentId}' in parents`,
-		fields: 'files(id, name, mimeType, parents)',
-		pageSize: 1
-	});
+async function findOrCreateFolder(
+  parentId: string,
+  folderName: string,
+): Promise<GoogleDriveFile> {
+  const response = await gapi.client.drive.files.list({
+    q: `name = '${folderName.replace(/'/g, "\\'")}' and mimeType = '${FOLDER_MIME_TYPE}' and trashed = false and '${parentId}' in parents`,
+    fields: "files(id, name, mimeType, parents)",
+    pageSize: 1,
+  });
 
-	const files = response.result.files || [];
-	if (files.length > 0) {
-		return files[0] as GoogleDriveFile;
-	}
+  const files = response.result.files || [];
+  if (files.length > 0) {
+    return files[0] as GoogleDriveFile;
+  }
 
-	const createResponse = await gapi.client.drive.files.create({
-		resource: {
-			name: folderName,
-			mimeType: FOLDER_MIME_TYPE,
-			parents: [parentId]
-		},
-		fields: 'id, name, mimeType, parents'
-	});
+  const createResponse = await gapi.client.drive.files.create({
+    resource: {
+      name: folderName,
+      mimeType: FOLDER_MIME_TYPE,
+      parents: [parentId],
+    },
+    fields: "id, name, mimeType, parents",
+  });
 
-	return createResponse.result as GoogleDriveFile;
+  return createResponse.result as GoogleDriveFile;
 }
 
-async function getOrCreateFolderByPath(parentId: string, path: string[]): Promise<string> {
-	let currentParentId = parentId;
+async function getOrCreateFolderByPath(
+  parentId: string,
+  path: string[],
+): Promise<string> {
+  let currentParentId = parentId;
 
-	for (const folderName of path) {
-		const folder = await findOrCreateFolder(currentParentId, folderName);
-		currentParentId = folder.id;
-	}
+  for (const folderName of path) {
+    const folder = await findOrCreateFolder(currentParentId, folderName);
+    currentParentId = folder.id;
+  }
 
-	return currentParentId;
+  return currentParentId;
 }
 
 export async function createDriveFile(
-	parentId: string,
-	name: string,
-	content: string = ''
+  parentId: string,
+  name: string,
+  content: string = "",
 ): Promise<GoogleDriveFile> {
-	try {
-		loadingState.start('file-create', undefined, name);
-		const token = getAccessToken();
-		if (!token) {
-			throw new Error('Not authenticated');
-		}
+  try {
+    loadingState.start("file-create", undefined, name);
+    const token = getAccessToken();
+    if (!token) {
+      throw new Error("Not authenticated");
+    }
 
-		const parts = name.split('/').filter((p) => p.length > 0);
-		if (parts.length === 0) {
-			throw new Error('Invalid file name');
-		}
+    const parts = name.split("/").filter((p) => p.length > 0);
+    if (parts.length === 0) {
+      throw new Error("Invalid file name");
+    }
 
-		let actualParentId = parentId;
-		if (parts.length > 1) {
-			const folderPath = parts.slice(0, -1);
-			actualParentId = await getOrCreateFolderByPath(parentId, folderPath);
-		}
+    let actualParentId = parentId;
+    if (parts.length > 1) {
+      const folderPath = parts.slice(0, -1);
+      actualParentId = await getOrCreateFolderByPath(parentId, folderPath);
+    }
 
-		const actualFileName = parts[parts.length - 1];
+    const actualFileName = parts[parts.length - 1];
 
-		const boundary = '-------314159265358979323846';
-		const delimiter = '\r\n--' + boundary + '\r\n';
-		const close_delim = '\r\n--' + boundary + '--';
+    const boundary = "-------314159265358979323846";
+    const delimiter = "\r\n--" + boundary + "\r\n";
+    const close_delim = "\r\n--" + boundary + "--";
 
-		const metadata = {
-			name: actualFileName,
-			mimeType: TEXT_MIME_TYPE,
-			parents: [actualParentId]
-		};
+    const metadata = {
+      name: actualFileName,
+      mimeType: TEXT_MIME_TYPE,
+      parents: [actualParentId],
+    };
 
-		const multipartRequestBody =
-			delimiter +
-			'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
-			JSON.stringify(metadata) +
-			delimiter +
-			'Content-Type: ' +
-			TEXT_MIME_TYPE +
-			'\r\n\r\n' +
-			content +
-			close_delim;
+    const multipartRequestBody =
+      delimiter +
+      "Content-Type: application/json; charset=UTF-8\r\n\r\n" +
+      JSON.stringify(metadata) +
+      delimiter +
+      "Content-Type: " +
+      TEXT_MIME_TYPE +
+      "\r\n\r\n" +
+      content +
+      close_delim;
 
-		const response = await fetch(
-			'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,mimeType,parents',
-			{
-				method: 'POST',
-				headers: {
-					Authorization: `Bearer ${token}`,
-					'Content-Type': 'multipart/related; boundary="' + boundary + '"'
-				},
-				body: multipartRequestBody
-			}
-		);
+    const response = await fetch(
+      "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,mimeType,parents",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": 'multipart/related; boundary="' + boundary + '"',
+        },
+        body: multipartRequestBody,
+      },
+    );
 
-		if (!response.ok) {
-			throw new Error(`Failed to create file: ${response.statusText}`);
-		}
+    if (!response.ok) {
+      throw new Error(`Failed to create file: ${response.statusText}`);
+    }
 
-		return await response.json();
-	} catch (error) {
-		console.error('Error creating Drive file:', error);
-		throw error;
-	} finally {
-		loadingState.end('file-create', undefined);
-	}
+    return await response.json();
+  } catch (error) {
+    console.error("Error creating Drive file:", error);
+    throw error;
+  } finally {
+    loadingState.end("file-create", undefined);
+  }
 }
 
-export async function createDriveFolder(parentId: string, name: string): Promise<GoogleDriveFile> {
-	try {
-		const parts = name.split('/').filter((p) => p.length > 0);
+export async function createDriveFolder(
+  parentId: string,
+  name: string,
+): Promise<GoogleDriveFile> {
+  try {
+    const parts = name.split("/").filter((p) => p.length > 0);
 
-		if (parts.length === 0) {
-			throw new Error('Invalid folder name');
-		}
+    if (parts.length === 0) {
+      throw new Error("Invalid folder name");
+    }
 
-		let currentParentId = parentId;
-		for (const folderName of parts) {
-			const folder = await findOrCreateFolder(currentParentId, folderName);
-			currentParentId = folder.id;
-		}
+    let currentParentId = parentId;
+    for (const folderName of parts) {
+      const folder = await findOrCreateFolder(currentParentId, folderName);
+      currentParentId = folder.id;
+    }
 
-		return await gapi.client.drive.files
-			.get({
-				fileId: currentParentId,
-				fields: 'id, name, mimeType, parents'
-			})
-			.then((response) => response.result as GoogleDriveFile);
-	} catch (error) {
-		console.error('Error creating Drive folder:', error);
-		throw error;
-	}
+    return await gapi.client.drive.files
+      .get({
+        fileId: currentParentId,
+        fields: "id, name, mimeType, parents",
+      })
+      .then((response) => response.result as GoogleDriveFile);
+  } catch (error) {
+    console.error("Error creating Drive folder:", error);
+    throw error;
+  }
 }
 
 export async function deleteDriveFile(fileId: string): Promise<void> {
-	try {
-		await gapi.client.drive.files.update({
-			fileId: fileId,
-			resource: {
-				trashed: true
-			}
-		});
-	} catch (error) {
-		console.error('Error deleting Drive file:', error);
-		throw error;
-	}
+  try {
+    await gapi.client.drive.files.update({
+      fileId: fileId,
+      resource: {
+        trashed: true,
+      },
+    });
+  } catch (error) {
+    console.error("Error deleting Drive file:", error);
+    throw error;
+  }
 }
 
-export async function searchDriveFiles(query: string): Promise<GoogleDriveFile[]> {
-	try {
-		const response = await gapi.client.drive.files.list({
-			q: `name contains '${query}' and trashed = false`,
-			fields: 'files(id, name, mimeType, parents)',
-			orderBy: 'folder,name'
-		});
+export async function searchDriveFiles(
+  query: string,
+): Promise<GoogleDriveFile[]> {
+  try {
+    const response = await gapi.client.drive.files.list({
+      q: `name contains '${query}' and trashed = false`,
+      fields: "files(id, name, mimeType, parents)",
+      orderBy: "folder,name",
+    });
 
-		return (response.result.files || []) as GoogleDriveFile[];
-	} catch (error) {
-		console.error('Error searching Drive files:', error);
-		throw error;
-	}
+    return (response.result.files || []) as GoogleDriveFile[];
+  } catch (error) {
+    console.error("Error searching Drive files:", error);
+    throw error;
+  }
 }
 
 export async function getDriveFile(fileId: string): Promise<GoogleDriveFile> {
-	try {
-		const response = await gapi.client.drive.files.get({
-			fileId: fileId,
-			fields: 'id, name, mimeType, parents'
-		});
+  try {
+    const response = await gapi.client.drive.files.get({
+      fileId: fileId,
+      fields: "id, name, mimeType, parents",
+    });
 
-		return response.result as GoogleDriveFile;
-	} catch (error) {
-		console.error('Error getting Drive file:', error);
-		throw error;
-	}
+    return response.result as GoogleDriveFile;
+  } catch (error) {
+    console.error("Error getting Drive file:", error);
+    throw error;
+  }
 }
